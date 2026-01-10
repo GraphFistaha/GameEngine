@@ -66,7 +66,7 @@ void Rect2DRenderer::TrySetRects(size_t newHash, std::span<const GameFramework::
     if (newCapacity != oldCapacity || !m_verticesBuffer)
     {
       RHI::IBufferGPU * newVerticesBuffer =
-        GetScene().GetDevice().GetContext().AllocBuffer(newCapacity * 6 * 2 * sizeof(float),
+        GetScene().GetDevice().GetContext().CreateBuffer(newCapacity * 6 * 2 * sizeof(float),
                                                         RHI::BufferGPUUsage::VertexBuffer, false);
       //TODO: Delete old verticesBuffer
       m_verticesBuffer = newVerticesBuffer;

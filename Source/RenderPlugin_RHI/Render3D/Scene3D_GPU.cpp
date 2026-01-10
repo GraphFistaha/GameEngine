@@ -5,7 +5,7 @@ namespace RenderPlugin
 Scene3D_GPU::Scene3D_GPU(InternalDevice & device)
   : OwnedBy<InternalDevice>(device)
   , m_viewProjBuffer(
-      device.GetContext().AllocBuffer(sizeof(ViewProjection), RHI::UniformBuffer, true))
+      device.GetContext().CreateBuffer(sizeof(ViewProjection), RHI::UniformBuffer, true))
   , m_cubesRenderer(*this)
 {
 }

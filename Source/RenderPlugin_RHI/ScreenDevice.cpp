@@ -16,9 +16,9 @@ ScreenDevice::ScreenDevice(RHI::IContext & ctx, GameFramework::IWindow & window)
   RHI::SurfaceConfig config{hwnd, hInstance};
   m_msaaResolveAttachment = ctx.CreateSurfacedAttachment(config, RHI::RenderBuffering::Triple);
   auto description = m_msaaResolveAttachment->GetDescription();
-  m_colorAttachment = ctx.AllocAttachment(description.format, description.extent,
+  m_colorAttachment = ctx.CreateAttachment(description.format, description.extent,
                                           RHI::RenderBuffering::Triple, RHI::SamplesCount::Eight);
-  m_depthStencilAttachment = ctx.AllocAttachment(RHI::ImageFormat::DEPTH_STENCIL,
+  m_depthStencilAttachment = ctx.CreateAttachment(RHI::ImageFormat::DEPTH_STENCIL,
                                                  description.extent, RHI::RenderBuffering::Triple,
                                                  RHI::SamplesCount::Eight);
 

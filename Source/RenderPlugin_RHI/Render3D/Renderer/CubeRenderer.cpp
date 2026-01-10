@@ -68,7 +68,7 @@ void CubeRenderer::TrySetCubes(size_t newHash, std::span<const GameFramework::Cu
     if (newCapacity != oldCapacity || !m_matricesBuffer)
     {
       RHI::IBufferGPU * newVerticesBuffer =
-        GetScene().GetDevice().GetContext().AllocBuffer(newCapacity * sizeof(GameFramework::Mat4f),
+        GetScene().GetDevice().GetContext().CreateBuffer(newCapacity * sizeof(GameFramework::Mat4f),
                                                         RHI::BufferGPUUsage::VertexBuffer, false);
       //TODO: Delete old verticesBuffer
       m_matricesBuffer = newVerticesBuffer;

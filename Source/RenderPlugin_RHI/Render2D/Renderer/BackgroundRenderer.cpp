@@ -10,7 +10,7 @@ namespace RenderPlugin
 BackgroundRenderer::BackgroundRenderer(Scene2D_GPU & scene)
   : OwnedBy<Scene2D_GPU>(scene)
   , m_renderPass(scene.GetDevice().GetFramebuffer().CreateSubpass())
-  , m_colorBuffer(scene.GetDevice().GetContext().AllocBuffer(3 * sizeof(float),
+  , m_colorBuffer(scene.GetDevice().GetContext().CreateBuffer(3 * sizeof(float),
                                                              RHI::BufferGPUUsage::UniformBuffer,
                                                              true))
 {
