@@ -4,7 +4,7 @@
 #include <Render/Primitive3d/Camera.hpp>
 #include <Render/Primitive3d/Cube.hpp>
 
-namespace GameFramework
+namespace GameFramework::Render
 {
 struct IRenderableScene3D
 {

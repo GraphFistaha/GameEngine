@@ -54,7 +54,7 @@ CubeRenderer::~CubeRenderer()
   //TODO: remove buffer
 }
 
-void CubeRenderer::TrySetCubes(size_t newHash, std::span<const GameFramework::Cube> cubes)
+void CubeRenderer::TrySetCubes(size_t newHash, std::span<const GameFramework::Render::Cube> cubes)
 {
   if (newHash != m_hash)
   {

@@ -15,8 +15,8 @@ struct Scene2D_GPU final : public GameFramework::OwnedBy<InternalDevice>
   virtual ~Scene2D_GPU() override;
   MAKE_ALIAS_FOR_GET_OWNER(InternalDevice, GetDevice);
 
-  void SetBackground(const GameFramework::Color3f & color);
-  void TrySetRects(size_t newHash, std::span<const GameFramework::Rect2d> rects);
+  void SetBackground(const GameFramework::Render::Color3f & color);
+  void TrySetRects(size_t newHash, std::span<const GameFramework::Render::Rect2d> rects);
 
 public:
   void Invalidate();

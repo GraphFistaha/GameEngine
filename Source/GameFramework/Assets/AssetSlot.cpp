@@ -25,6 +25,17 @@ void AssetSlot::SetAsset(const Uuid & uuid)
   }
 }
 
+void AssetSlot::SetAsset(const std::filesystem::path& path)
+{
+    const IAsset* foundAsset = GetAssetsRegistry().GetAsset(path);
+    if (foundAsset && foundAsset->GetType() == m_assetType)
+    {
+        m_asset = const_cast<IAsset*>(foundAsset);
+        if (m_asset)
+            m_asset->AddUser();
+    }
+}
+
 void AssetSlot::ClearAsset()
 {
   if (m_asset)
@@ -32,7 +43,7 @@ void AssetSlot::ClearAsset()
   m_asset = nullptr;
 }
 
-const IAsset * AssetSlot::GetAsset() const
+const IAsset * AssetSlot::GetAsset() const noexcept
 {
   return m_asset;
 }

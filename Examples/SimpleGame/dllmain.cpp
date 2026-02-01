@@ -97,7 +97,7 @@ void SimpleGame::Render(GameFramework::IDevice & device)
     else
     {
       scene->SetBackground({0.2f, 0.5f, 0.7f});
-      scene->AddRect(Rect2d{-0.3f, -0.3f, 0.6f, 0.6f});
+      scene->AddRect(Render::Rect2d{-0.3f, -0.3f, 0.6f, 0.6f});
     }
   }
 }

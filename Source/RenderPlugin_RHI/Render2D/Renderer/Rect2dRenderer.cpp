@@ -41,7 +41,7 @@ Rect2DRenderer::~Rect2DRenderer()
 }
 
 
-void Rect2DRenderer::TrySetRects(size_t newHash, std::span<const GameFramework::Rect2d> rects)
+void Rect2DRenderer::TrySetRects(size_t newHash, std::span<const GameFramework::Render::Rect2d> rects)
 {
   if (newHash != m_hash)
   {

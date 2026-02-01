@@ -33,12 +33,12 @@ ScreenDevice::~ScreenDevice()
   //TODO: destroy m_framebuffer in context
 }
 
-GameFramework::Scene2DUPtr ScreenDevice::AcquireScene2D()
+GameFramework::Render::Scene2DUPtr ScreenDevice::AcquireScene2D()
 {
   return std::make_unique<Scene2D_CPU>(m_scene2D);
 }
 
-GameFramework::Scene3DUPtr ScreenDevice::AcquireScene3D()
+GameFramework::Render::Scene3DUPtr ScreenDevice::AcquireScene3D()
 {
   return std::make_unique<Scene3D_CPU>(m_scene3D);
 }

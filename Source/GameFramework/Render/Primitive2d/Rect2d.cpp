@@ -1,8 +1,8 @@
 #include "Rect2d.hpp"
 
-#include <Utility/Utility.hpp>
+#include <Utility/Hash.hpp>
 
-namespace GameFramework
+namespace GameFramework::Render
 {
 Rect2d::Rect2d(float left, float top, float width, float height)
   : m_left(left)
@@ -15,7 +15,7 @@ Rect2d::Rect2d(float left, float top, float width, float height)
 size_t Rect2d::Hash() const noexcept
 {
   size_t hash = 0;
-  Utils::hash_combine(hash, m_left, m_top, m_width, m_height);
+  Utils::combined_hash(hash, m_left, m_top, m_width, m_height);
   return hash;
 }
 } // namespace GameFramework

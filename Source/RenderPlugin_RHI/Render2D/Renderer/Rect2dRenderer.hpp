@@ -15,7 +15,7 @@ public:
   MAKE_ALIAS_FOR_GET_OWNER(Scene2D_GPU, GetScene);
 
 public:
-  void TrySetRects(size_t newHash, std::span<const GameFramework::Rect2d> rects);
+  void TrySetRects(size_t newHash, std::span<const GameFramework::Render::Rect2d> rects);
   void Submit();
 
 private:

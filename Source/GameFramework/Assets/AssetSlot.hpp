@@ -14,8 +14,9 @@ struct GAME_FRAMEWORK_API AssetSlot final
 
 public:
   void SetAsset(const Uuid & uuid);
+  void SetAsset(const std::filesystem::path & path);
   void ClearAsset();
-  const IAsset * GetAsset() const;
+  const IAsset * GetAsset() const noexcept;
 
 public:
   static size_t ReadBinary(IFileReader & stream, AssetSlot & slot);

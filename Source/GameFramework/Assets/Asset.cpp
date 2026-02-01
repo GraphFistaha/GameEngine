@@ -17,6 +17,9 @@ struct AssetImpl : public IAsset
   virtual void ReleaseUser() override { m_refCounter--; }
   virtual size_t GetUsersCount() const noexcept override { return m_refCounter; }
 
+  // IHashable interface
+  virtual size_t Hash() const noexcept { return m_uuid.Hash(); }
+
 private:
   std::filesystem::path m_path;
   Uuid m_uuid;

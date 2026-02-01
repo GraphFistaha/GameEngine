@@ -21,6 +21,7 @@ PRIVATE
 	"Utility/Uuid.hpp"
 	"Utility/Uuid.cpp"
 	"Utility/Utility.hpp"
+	"Utility/Hash.hpp"
 
 	"Plugin/Plugin.cpp"
 	"Plugin/Plugin.hpp"

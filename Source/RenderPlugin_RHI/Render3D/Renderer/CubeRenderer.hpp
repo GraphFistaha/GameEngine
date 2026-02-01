@@ -15,7 +15,7 @@ public:
   MAKE_ALIAS_FOR_GET_OWNER(Scene3D_GPU, GetScene);
 
 public:
-  void TrySetCubes(size_t newHash, std::span<const GameFramework::Cube> cubes);
+  void TrySetCubes(size_t newHash, std::span<const GameFramework::Render::Cube> cubes);
   void Submit();
 
 private:

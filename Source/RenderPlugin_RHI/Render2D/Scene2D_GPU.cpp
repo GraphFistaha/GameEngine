@@ -16,12 +16,12 @@ Scene2D_GPU::Scene2D_GPU(InternalDevice & device)
 
 Scene2D_GPU::~Scene2D_GPU() = default;
 
-void Scene2D_GPU::SetBackground(const GameFramework::Color3f & color)
+void Scene2D_GPU::SetBackground(const GameFramework::Render::Color3f & color)
 {
   m_backgroundRenderer.SetBackground(color);
 }
 
-void Scene2D_GPU::TrySetRects(size_t newHash, std::span<const GameFramework::Rect2d> rects)
+void Scene2D_GPU::TrySetRects(size_t newHash, std::span<const GameFramework::Render::Rect2d> rects)
 {
   m_rectsRenderer.TrySetRects(newHash, rects);
 }

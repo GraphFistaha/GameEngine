@@ -14,8 +14,8 @@ namespace GameFramework
 struct IDevice
 {
   virtual ~IDevice() = default;
-  virtual Scene2DUPtr AcquireScene2D() = 0;
-  virtual Scene3DUPtr AcquireScene3D() = 0;
+  virtual GameFramework::Render::Scene2DUPtr AcquireScene2D() = 0;
+  virtual GameFramework::Render::Scene3DUPtr AcquireScene3D() = 0;
   virtual int GetOwnerId() const noexcept = 0;
   virtual float GetAspectRatio() const noexcept = 0;
 };

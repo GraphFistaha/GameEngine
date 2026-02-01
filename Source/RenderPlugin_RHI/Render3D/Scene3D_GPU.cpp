@@ -15,12 +15,12 @@ Scene3D_GPU::~Scene3D_GPU()
   //TODO: delete m_viewProjBuffer
 }
 
-void Scene3D_GPU::TrySetCubes(size_t newHash, std::span<const GameFramework::Cube> cubes)
+void Scene3D_GPU::TrySetCubes(size_t newHash, std::span<const GameFramework::Render::Cube> cubes)
 {
   m_cubesRenderer.TrySetCubes(newHash, cubes);
 }
 
-void Scene3D_GPU::SetCamera(const GameFramework::Camera & camera)
+void Scene3D_GPU::SetCamera(const GameFramework::Render::Camera & camera)
 {
   ViewProjection vp{camera.GetViewMatrix(), camera.GetProjectionMatrix()};
   m_viewProjBuffer->UploadSync(&vp, sizeof(vp));

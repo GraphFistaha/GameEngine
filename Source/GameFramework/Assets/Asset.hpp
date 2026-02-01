@@ -2,6 +2,7 @@
 
 #include <filesystem>
 
+#include <Utility/Hash.hpp>
 #include <Utility/Uuid.hpp>
 
 namespace GameFramework
@@ -16,9 +17,10 @@ enum class AssetType
   ShaderSource,  // glsl, hlsl, vert, frag, geom
   ShaderBinary,  // spv, dxil, cso
   ShaderInclude, // inc, hlsli, glsli
+  Material
 };
 
-struct IAsset
+struct IAsset : public IHashable
 {
   virtual ~IAsset() = default;
   virtual Uuid GetUUID() const noexcept = 0;

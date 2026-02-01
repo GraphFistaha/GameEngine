@@ -15,7 +15,7 @@ public:
   MAKE_ALIAS_FOR_GET_OWNER(Scene2D_GPU, GetScene);
 
 public:
-  void SetBackground(const GameFramework::Color3f & color);
+  void SetBackground(const GameFramework::Render::Color3f & color);
   void Submit();
 
 private:

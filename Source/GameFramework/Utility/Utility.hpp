@@ -25,21 +25,6 @@ constexpr std::array<ValueType, N> make_array(InIt first, InIt last)
   return make_array(first, std::make_index_sequence<N>{});
 }
 
-constexpr inline void hash_combine(std::size_t & seed)
-{
-}
-
-/// @brief combines two hash result
-/// @param seed - old hash-value to combine with
-/// @param v - value to hash
-template<typename T, typename... Rest>
-constexpr inline void hash_combine(std::size_t & seed, const T & v, Rest... rest)
-{
-  std::hash<T> hasher;
-  seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-  hash_combine(seed, rest...);
-}
-
 template<typename T>
 constexpr T bit(T i)
 {

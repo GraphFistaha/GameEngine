@@ -12,7 +12,7 @@
 #include <Input/BindingParser.hpp>
 #include <Input/InputProcessor.hpp>
 #include <Input/InputQueue.hpp>
-#include <Utility/Utility.hpp>
+#include <Utility/Hash.hpp>
 
 namespace
 {
@@ -21,7 +21,7 @@ struct InputBindingHasher final
   size_t operator()(const GameFramework::InputBinding & binding) const noexcept
   {
     size_t res = 0;
-    GameFramework::Utils::hash_combine(res, binding.name, binding.code, binding.bindings);
+    GameFramework::Utils::combined_hash(res, binding.name, binding.code, binding.bindings);
     return res;
   }
 };

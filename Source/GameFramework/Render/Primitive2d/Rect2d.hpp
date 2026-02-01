@@ -2,14 +2,14 @@
 
 #include <Render/RenderPrimitive.hpp>
 
-namespace GameFramework
+namespace GameFramework::Render
 {
 struct GAME_FRAMEWORK_API Rect2d : public IRenderPrimitive
 {
   Rect2d() = default;
   Rect2d(float left, float top, float width, float height);
 
-public: // IRenderPrimitive
+public: // IHashable
   virtual size_t Hash() const noexcept override;
 
 public:
