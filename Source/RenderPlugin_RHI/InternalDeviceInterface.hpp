@@ -1,11 +1,11 @@
 #pragma once
 
-#include <OwnedBy.hpp>
+#include <Utility/OwnedBy.hpp>
 #include <RHI.hpp>
 
 namespace RenderPlugin
 {
-struct InternalDevice : public RHI::OwnedBy<RHI::IContext>
+struct InternalDevice : public GameFramework::OwnedBy<RHI::IContext>
 {
   explicit InternalDevice(RHI::IContext & ctx)
     : OwnedBy<RHI::IContext>(ctx)

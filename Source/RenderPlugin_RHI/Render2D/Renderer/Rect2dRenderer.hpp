@@ -1,13 +1,13 @@
 #pragma once
 #include <GameFramework.hpp>
-#include <OwnedBy.hpp>
 #include <RHI.hpp>
+#include <Utility/OwnedBy.hpp>
 
 namespace RenderPlugin
 {
 struct Scene2D_GPU;
 
-class Rect2DRenderer : public RHI::OwnedBy<Scene2D_GPU>
+class Rect2DRenderer : public GameFramework::OwnedBy<Scene2D_GPU>
 {
 public:
   explicit Rect2DRenderer(Scene2D_GPU & scene);

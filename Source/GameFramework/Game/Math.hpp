@@ -53,11 +53,6 @@ inline Vec4d operator*(const Vec4d& v, double m) { return { v.x * m, v.y * m, v.
 
 // clang-format on
 
-inline Vec3f operator-(const Vec3f & v) noexcept
-{
-  return {-v.x, -v.y, -v.z};
-}
-
 } // namespace GameFramework
 
 

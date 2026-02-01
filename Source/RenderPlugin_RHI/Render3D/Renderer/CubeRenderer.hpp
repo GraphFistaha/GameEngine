@@ -1,13 +1,13 @@
 #pragma once
 #include <GameFramework.hpp>
-#include <OwnedBy.hpp>
+#include <Utility/OwnedBy.hpp>
 #include <RHI.hpp>
 
 namespace RenderPlugin
 {
 struct Scene3D_GPU;
 
-class CubeRenderer : public RHI::OwnedBy<Scene3D_GPU>
+class CubeRenderer : public GameFramework::OwnedBy<Scene3D_GPU>
 {
 public:
   explicit CubeRenderer(Scene3D_GPU & scene);

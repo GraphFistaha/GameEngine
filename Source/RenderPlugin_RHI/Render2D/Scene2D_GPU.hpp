@@ -4,11 +4,12 @@
 #include <InternalDeviceInterface.hpp>
 #include <Render2D/Renderer/BackgroundRenderer.hpp>
 #include <Render2D/Renderer/Rect2dRenderer.hpp>
+#include <Utility/OwnedBy.hpp>
 
 namespace RenderPlugin
 {
 
-struct Scene2D_GPU final : public RHI::OwnedBy<InternalDevice>
+struct Scene2D_GPU final : public GameFramework::OwnedBy<InternalDevice>
 {
   explicit Scene2D_GPU(InternalDevice & device);
   virtual ~Scene2D_GPU() override;

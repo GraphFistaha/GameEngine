@@ -4,6 +4,7 @@
 #include <InternalDeviceInterface.hpp>
 #include <Render3D/Renderer/CubeRenderer.hpp>
 #include <RHI.hpp>
+#include <Utility/OwnedBy.hpp>
 
 namespace RenderPlugin
 {
@@ -14,7 +15,7 @@ struct ViewProjection final
   GameFramework::Mat4f projection;
 };
 
-struct Scene3D_GPU final : public RHI::OwnedBy<InternalDevice>
+struct Scene3D_GPU final : public GameFramework::OwnedBy<InternalDevice>
 {
   explicit Scene3D_GPU(InternalDevice & device);
   virtual ~Scene3D_GPU() override;
