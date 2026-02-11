@@ -9,7 +9,7 @@
 
 namespace GameFramework::Render
 {
-struct GAME_FRAMEWORK_API IRenderPrimitive : public IHashable
+struct GAME_FRAMEWORK_API IRenderPrimitive
 {
   virtual ~IRenderPrimitive() = default;
 };

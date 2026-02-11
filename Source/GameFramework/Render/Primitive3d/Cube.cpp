@@ -1,7 +1,6 @@
 #define USE_GLM
 #define GLM_ENABLE_EXPERIMENTAL
 #include "Cube.hpp"
-
 #include <Utility/Utility.hpp>
 
 #include "glm/gtx/hash.hpp"
@@ -26,11 +25,16 @@ const Mat4f & Cube::GetTransform() const & noexcept
   return m_transform;
 }
 
+const IAsset * Cube::GetMaterial() const noexcept
+{
+  return m_material.GetAsset();
+}
+
 size_t Cube::Hash() const noexcept
 {
   size_t seed = 0;
-  //Utils::combined_hash(seed, CastToGLM(m_transform), m_material);
+  Utils::combined_hash(seed, CastToGLM(m_transform));
   return seed;
 }
 
-} // namespace GameFramework
+} // namespace GameFramework::Render

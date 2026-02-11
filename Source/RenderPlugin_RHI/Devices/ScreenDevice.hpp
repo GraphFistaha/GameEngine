@@ -2,7 +2,7 @@
 #include <list>
 
 #include <GameFramework.hpp>
-#include <InternalDeviceInterface.hpp>
+#include <Devices/InternalDeviceInterface.hpp>
 #include <Render2D/Scene2D_GPU.hpp>
 #include <Render3D/Scene3D_GPU.hpp>
 #include <RHI.hpp>

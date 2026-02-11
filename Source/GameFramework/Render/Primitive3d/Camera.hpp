@@ -37,12 +37,15 @@ public:
   //Vec3f GetFrontVector() const noexcept;
 
 public: // IHashable
-  virtual size_t Hash() const noexcept override;
+  size_t Hash() const noexcept;
 
 private:
   bool m_isPerspective = false;
   Mat4f m_projMatrix;
   Mat4f m_viewMatrix;
 };
+
+// concepts
+static_assert(Hashable<Camera>);
 
 } // namespace GameFramework::Render

@@ -2,7 +2,7 @@
 
 #include <Constants.hpp>
 #include <Files/FileManager.hpp>
-#include <ShaderFile.hpp>
+#include <Resources/ShaderFile.hpp>
 
 namespace RenderPlugin
 {

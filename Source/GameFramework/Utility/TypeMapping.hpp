@@ -49,10 +49,10 @@ struct type_table<_Ts...>::type_table_row final
   using next = type_table_row<index + 1, Ts...>;
 
   template<typename U>
-  static constexpr size_t index_of()
+  static constexpr size_t index_of() noexcept
   {
     if constexpr (std::is_same_v<U, T>)
-      return index;
+      return Index;
     else
       return next::template index_of<U>();
   }
@@ -66,12 +66,12 @@ struct type_table<_Ts...>::type_table_row<Index, T> final
   static constexpr size_t index = Index;
   using type = T;
   template<typename U>
-  static constexpr size_t index_of()
+  static constexpr size_t index_of() noexcept
   {
     if constexpr (std::is_same_v<U, T>)
-      return index;
+      return Index;
     else
-      throw "No type in table";
+      return -1;
   }
 };
 
@@ -91,4 +91,4 @@ struct type_table<_Ts...>::row_indexer<Table, 0> final
   using indexed_type = typename Table::type;
 };
 
-} // namespace GameFramework::utils
+} // namespace GameFramework::Utils

@@ -16,6 +16,7 @@ PRIVATE
 	"Utility/Formatter.hpp"
 	"Utility/Storage.hpp"
 	"Utility/TypeMapping.hpp"
+	"Utility/Heterogeneous.hpp"
 	"Utility/StringUtils.hpp"
 	"Utility/Random.hpp"
 	"Utility/Uuid.hpp"

@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include <Utility/Concepts.hpp>
+
 namespace GameFramework::Utils
 {
 
@@ -36,18 +38,16 @@ constexpr inline void combined_hash(std::size_t & seed, const T & v, Rest... res
 
 namespace GameFramework
 {
-struct GAME_FRAMEWORK_API IHashable
-{
-  virtual ~IHashable() = default;
-  virtual size_t Hash() const noexcept = 0;
+template<typename T>
+concept Hashable = requires(T obj) {
+  { obj.Hash() } -> std::convertible_to<std::size_t>;
 };
 } // namespace GameFramework
 
 
 namespace std
 {
-template<typename ObjT>
-  requires(std::is_base_of_v<GameFramework::IHashable, ObjT>)
+template<GameFramework::Hashable ObjT>
 struct hash<ObjT>
 {
   std::size_t operator()(const ObjT & obj) const noexcept { return obj.Hash(); }

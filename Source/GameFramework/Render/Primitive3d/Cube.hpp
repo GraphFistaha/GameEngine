@@ -13,12 +13,17 @@ struct GAME_FRAMEWORK_API Cube : public IRenderPrimitive
 
 public:
   const Mat4f & GetTransform() const & noexcept;
+  const IAsset * GetMaterial() const noexcept;
 
 public: // IHashable
-  virtual size_t Hash() const noexcept override;
+  size_t Hash() const noexcept;
 
 private:
   Mat4f m_transform;
   AssetSlot m_material{AssetType::Material};
 };
-} // namespace GameFramework
+
+// concepts
+static_assert(Hashable<Cube>);
+
+} // namespace GameFramework::Render

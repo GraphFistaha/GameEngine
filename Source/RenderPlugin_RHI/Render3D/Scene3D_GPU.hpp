@@ -1,8 +1,15 @@
 #pragma once
 
+#include <type_traits>
+#include <unordered_set>
+
+#include <Common/Pipeline.hpp>
+#include <Common/Renderer.hpp>
+#include <Devices/InternalDeviceInterface.hpp>
 #include <GameFramework.hpp>
-#include <InternalDeviceInterface.hpp>
+#include <Render3D/Primitives.hpp>
 #include <Render3D/Renderer/CubeRenderer.hpp>
+#include <Resources/Material.hpp>
 #include <RHI.hpp>
 #include <Utility/OwnedBy.hpp>
 
@@ -21,20 +28,23 @@ struct Scene3D_GPU final : public GameFramework::OwnedBy<InternalDevice>
   virtual ~Scene3D_GPU() override;
   MAKE_ALIAS_FOR_GET_OWNER(InternalDevice, GetDevice);
 
-  void TrySetCubes(size_t newHash, std::span<const GameFramework::Render::Cube> cubes);
   void SetCamera(const GameFramework::Render::Camera & camera);
+  bool AddPipeline(const Pipeline<Dim3D::Cube> & pipeline);
 
 public:
   RHI::IBufferGPU * GetViewProjectionBuffer();
 
 public:
   void Invalidate();
-  void Draw();
   bool ShouldBeInvalidated() const noexcept;
+  void UpdateRenderers();
 
 private:
+  using RendererConstructor = std::function<std::pair<PipelineSettings, RendererUPtr>()>;
+  std::vector<RendererConstructor> m_tasksToCreateRenderers;
   RHI::IBufferGPU * m_viewProjBuffer = nullptr;
-  CubeRenderer m_cubesRenderer; // one for each material
+  std::unordered_map<PipelineSettings, RendererUPtr> m_renderers;
+  // you should delete renderers which is not used during frame
 };
 
 } // namespace RenderPlugin

@@ -7,6 +7,7 @@
 #include <string>
 
 #include <Files/FileStream.hpp>
+#include <Utility/Hash.hpp>
 
 namespace GameFramework
 {
@@ -34,16 +35,10 @@ public:
 
 private:
   std::byte m_bytes[16];
+
+public:
 };
+
+static_assert(Hashable<Uuid>);
 
 } // namespace GameFramework
-
-
-namespace std
-{
-template<>
-struct hash<GameFramework::Uuid>
-{
-  size_t operator()(const GameFramework::Uuid & uuid) const noexcept { return uuid.Hash(); }
-};
-} // namespace std

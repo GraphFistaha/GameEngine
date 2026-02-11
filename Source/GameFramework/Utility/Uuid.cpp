@@ -6,15 +6,12 @@
 #include <Utility/Random.hpp>
 #include <uuid.h> //stduuid
 
-#include "Uuid.hpp"
-
-static_assert(sizeof(GameFramework::Uuid) == sizeof(uuids::uuid));
-
 namespace GameFramework
 {
 
 Uuid::Uuid()
 {
+  static_assert(sizeof(GameFramework::Uuid::m_bytes) == sizeof(uuids::uuid));
   new (m_bytes) uuids::uuid();
 }
 

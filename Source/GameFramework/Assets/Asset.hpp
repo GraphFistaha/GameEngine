@@ -20,7 +20,7 @@ enum class AssetType
   Material
 };
 
-struct IAsset : public IHashable
+struct IAsset
 {
   virtual ~IAsset() = default;
   virtual Uuid GetUUID() const noexcept = 0;

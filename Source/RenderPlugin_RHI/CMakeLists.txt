@@ -6,11 +6,22 @@ target_sources(${this_target}
 PRIVATE
 	"dllmain.cpp"
 	"Constants.hpp"
-	"InternalDeviceInterface.hpp"
-	"ScreenDevice.cpp"
-	"ScreenDevice.hpp"
-	"ShaderFile.hpp"
-	"ShaderFile.cpp"
+
+	"Common/RenderBatch.hpp"
+	"Common/PipelineSettings.hpp"
+	"Common/Pipeline.hpp"
+
+	"Resources/Material.hpp"
+	"Resources/Material.cpp"
+	"Resources/MaterialManager.hpp"
+	"Resources/MaterialManager.cpp"
+	"Resources/ShaderFile.hpp"
+	"Resources/ShaderFile.cpp"
+	"Resources/NullShader.frag"
+
+	"Devices/InternalDeviceInterface.hpp"
+	"Devices/ScreenDevice.cpp"
+	"Devices/ScreenDevice.hpp"
 
 	"Render2D/Scene2D_GPU.cpp" 
 	"Render2D/Scene2D_GPU.hpp" 
@@ -21,6 +32,7 @@ PRIVATE
 	"Render2D/Renderer/Rect2dRenderer.cpp"
 	"Render2D/Renderer/Rect2dRenderer.hpp"
 
+	"Render3D/Primitives.hpp"
 	"Render3D/Scene3D_CPU.cpp"
 	"Render3D/Scene3D_CPU.hpp"
 	"Render3D/Scene3D_GPU.cpp"
@@ -45,12 +57,13 @@ PRIVATE
 	SHADERS_DIRECTORY=".shaders"
 )
 
-include(CompileSpirV.cmake)
+include(Resources/CompileSpirV.cmake)
 
 TARGET_PRECOMPILE_SPIRV(
 TARGET ${this_target} 
 SHADERS_DIRECTORY ".shaders"
 SHADERS
+	"Resources/NullShader.frag"
 	"Render2D/Shaders/background.vert"
 	"Render2D/Shaders/background.frag"
 	"Render2D/Shaders/rect2d.frag"

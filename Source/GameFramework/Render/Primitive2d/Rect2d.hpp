@@ -9,8 +9,8 @@ struct GAME_FRAMEWORK_API Rect2d : public IRenderPrimitive
   Rect2d() = default;
   Rect2d(float left, float top, float width, float height);
 
-public: // IHashable
-  virtual size_t Hash() const noexcept override;
+public: // Hashable
+  size_t Hash() const noexcept;
 
 public:
   float X() const noexcept { return m_left; }
@@ -24,4 +24,8 @@ private:
   float m_width = 0;
   float m_height = 0;
 };
-} // namespace GameFramework
+
+/// concepts
+static_assert(Hashable<Rect2d>);
+
+} // namespace GameFramework::Render

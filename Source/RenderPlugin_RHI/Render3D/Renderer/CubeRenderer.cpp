@@ -6,12 +6,12 @@
 #include <Constants.hpp>
 #include <GameFramework.hpp>
 #include <Render3D/Scene3D_GPU.hpp>
-#include <ShaderFile.hpp>
+#include <Resources/ShaderFile.hpp>
 
 namespace RenderPlugin
 {
 
-CubeRenderer::CubeRenderer(Scene3D_GPU & scene)
+CubeRenderer::CubeRenderer(Scene3D_GPU & scene, const PipelineSettings & settings)
   : OwnedBy<Scene3D_GPU>(scene)
   , m_renderPass(scene.GetDevice().GetFramebuffer().CreateSubpass())
 {
@@ -36,31 +36,24 @@ CubeRenderer::CubeRenderer(Scene3D_GPU & scene)
     stream->ReadValue<ShaderFile>(file);
     subpassConfig.AttachShader(RHI::ShaderType::Vertex, file.GetSpirV());
   }
+  subpassConfig.AttachShader(RHI::ShaderType::Fragment, settings.GetShader().GetSpirV());
   m_vpDescriptor = subpassConfig.DeclareUniform({0, 0}, RHI::ShaderType::Vertex);
   m_vpDescriptor->AssignBuffer(*scene.GetViewProjectionBuffer());
-
-  // должно вызываться материалом
-  {
-    auto && stream = GameFramework::GetFileManager().OpenRead(g_shadersDirectory / "Cube_frag.spv");
-    ShaderFile file;
-    stream->ReadValue<ShaderFile>(file);
-    subpassConfig.AttachShader(RHI::ShaderType::Fragment, file.GetSpirV());
-  }
 }
 
 CubeRenderer::~CubeRenderer()
 {
   //TODO: remove subpass
-  //TODO: remove buffer
+  GetScene().GetDevice().GetContext().DeleteBuffer(m_matricesBuffer);
 }
 
-void CubeRenderer::TrySetCubes(size_t newHash, std::span<const GameFramework::Render::Cube> cubes)
+bool CubeRenderer::SetBatchImpl(const Dim3D::CubeBatch & batch)
 {
-  if (newHash != m_hash)
+  if (batch.ObjectsHash() != m_hash)
   {
     size_t oldCapacity = m_matricesCpuBuffer.capacity();
     m_matricesCpuBuffer.clear();
-    for (auto && cube : cubes)
+    for (auto && cube : batch.GetObjects())
       m_matricesCpuBuffer.push_back(cube.GetTransform());
 
     size_t newCapacity = m_matricesCpuBuffer.capacity();
@@ -69,14 +62,15 @@ void CubeRenderer::TrySetCubes(size_t newHash, std::span<const GameFramework::Re
     {
       RHI::IBufferGPU * newVerticesBuffer =
         GetScene().GetDevice().GetContext().CreateBuffer(newCapacity * sizeof(GameFramework::Mat4f),
-                                                        RHI::BufferGPUUsage::VertexBuffer, false);
+                                                         RHI::BufferGPUUsage::VertexBuffer, false);
       //TODO: Delete old verticesBuffer
       m_matricesBuffer = newVerticesBuffer;
     }
     m_matricesBuffer->UploadAsync(m_matricesCpuBuffer.data(),
                                   m_matricesCpuBuffer.size() * sizeof(GameFramework::Mat4f));
-    m_hash = newHash;
+    m_hash = batch.ObjectsHash();
   }
+  return true;
 }
 
 void CubeRenderer::Submit()
@@ -84,12 +78,14 @@ void CubeRenderer::Submit()
   if (m_renderPass && m_renderPass->ShouldBeInvalidated() && !m_matricesCpuBuffer.empty())
   {
     auto extent = GetScene().GetDevice().GetFramebuffer().GetExtent();
-    m_renderPass->BeginPass();
-    m_renderPass->SetScissor(0, 0, extent[0], extent[1]);
-    m_renderPass->SetViewport(static_cast<float>(extent[0]), static_cast<float>(extent[1]));
-    m_renderPass->BindVertexBuffer(0, *m_matricesBuffer);
-    m_renderPass->DrawVertices(36, m_matricesCpuBuffer.size());
-    m_renderPass->EndPass();
+    if (m_renderPass->BeginPass())
+    {
+      m_renderPass->SetScissor(0, 0, extent[0], extent[1]);
+      m_renderPass->SetViewport(static_cast<float>(extent[0]), static_cast<float>(extent[1]));
+      m_renderPass->BindVertexBuffer(0, *m_matricesBuffer);
+      m_renderPass->DrawVertices(36, m_matricesCpuBuffer.size());
+      m_renderPass->EndPass();
+    }
   }
 }
 

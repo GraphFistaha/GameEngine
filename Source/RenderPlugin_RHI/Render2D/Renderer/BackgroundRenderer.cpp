@@ -3,7 +3,7 @@
 #include <Constants.hpp>
 #include <GameFramework.hpp>
 #include <Render2D/Scene2D_GPU.hpp>
-#include <ShaderFile.hpp>
+#include <Resources/ShaderFile.hpp>
 
 namespace RenderPlugin
 {
