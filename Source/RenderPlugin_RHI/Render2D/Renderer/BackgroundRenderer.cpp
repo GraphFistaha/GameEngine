@@ -22,14 +22,14 @@ BackgroundRenderer::BackgroundRenderer(Scene2D_GPU & scene)
   m_colorDescriptor->AssignBuffer(*m_colorBuffer);
   {
     auto && stream =
-      GameFramework::GetFileManager().OpenRead(g_shadersDirectory / "background_vert.spv");
+      GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "background_vert.spv");
     ShaderFile file;
     stream->ReadValue<ShaderFile>(file);
     subpassConfig.AttachShader(RHI::ShaderType::Vertex, file.GetSpirV());
   }
   {
     auto && stream =
-      GameFramework::GetFileManager().OpenRead(g_shadersDirectory / "background_frag.spv");
+      GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "background_frag.spv");
     ShaderFile file;
     stream->ReadValue<ShaderFile>(file);
     subpassConfig.AttachShader(RHI::ShaderType::Fragment, file.GetSpirV());

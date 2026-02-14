@@ -5,7 +5,7 @@ namespace GameFramework::details
 {
 AssetType GetAssetTypeByPath(const std::filesystem::path & path) noexcept;
 
-std::string_view AssetTypeToString(AssetType type) noexcept;
-AssetType StringToAssetType(std::string_view str) noexcept;
+std::wstring_view AssetTypeToString(AssetType type) noexcept;
+AssetType StringToAssetType(std::wstring_view str) noexcept;
 
 } // namespace GameFramework::details

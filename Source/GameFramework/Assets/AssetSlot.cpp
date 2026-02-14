@@ -48,7 +48,7 @@ const IAsset * AssetSlot::GetAsset() const noexcept
   return m_asset;
 }
 
-size_t AssetSlot::ReadBinary(IFileReader & stream, AssetSlot & slot)
+size_t AssetSlot::ReadBinary(IBinaryFileReader & stream, AssetSlot & slot)
 {
   Uuid assetUuid;
   size_t result = stream.ReadValue(assetUuid);
@@ -56,7 +56,7 @@ size_t AssetSlot::ReadBinary(IFileReader & stream, AssetSlot & slot)
   return result;
 }
 
-void AssetSlot::WriteBinary(IFileWriter & stream, const AssetSlot & slot)
+void AssetSlot::WriteBinary(IBinaryFileWriter & stream, const AssetSlot & slot)
 {
   stream.WriteValue(slot.m_asset->GetUUID());
 }

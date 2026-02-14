@@ -17,8 +17,8 @@ public:
   bool IsEmpty() const noexcept;
 
 public:
-  static size_t ReadBinary(GameFramework::IFileReader & stream, ShaderFile & file);
-  static void WriteBinary(GameFramework::IFileWriter & stream, const ShaderFile & file);
+  static size_t ReadBinary(GameFramework::IBinaryFileReader & stream, ShaderFile & file);
+  static void WriteBinary(GameFramework::IBinaryFileWriter & stream, const ShaderFile & file);
 
 public: //Hashable
   size_t Hash() const noexcept;

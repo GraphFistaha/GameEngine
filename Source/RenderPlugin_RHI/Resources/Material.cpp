@@ -7,25 +7,25 @@ namespace RenderPlugin
 Material::Material(std::nullptr_t)
 {
   if (auto reader =
-        GameFramework::GetFileManager().OpenRead(g_shadersDirectory / "NullShader_frag.spv"))
+        GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "NullShader_frag.spv"))
   {
     reader->ReadValue(m_fragmentShader);
   }
 }
 
-size_t Material::ReadBinary(GameFramework::IFileReader & stream, Material & material)
+size_t Material::ReadText(GameFramework::ITextFileReader & stream, Material & material)
 {
   material.m_path = stream.FullPath();
   std::wstring shaderPath;
-  size_t result = stream.ReadValue(shaderPath);
-  auto shaderStream = GameFramework::GetFileManager().OpenRead(shaderPath);
+  size_t result = stream.ReadLine(shaderPath);
+  auto shaderStream = GameFramework::GetFileManager().OpenReadBinary(shaderPath);
   shaderStream->ReadValue(material.m_fragmentShader);
   return result;
 }
 
-void Material::WriteBinary(GameFramework::IFileWriter & stream, const Material & material)
+void Material::WriteText(GameFramework::ITextFileWriter & stream, const Material & material)
 {
-  stream.WriteValue(material.m_fragmentShader.GetPath().wstring());
+  stream.WriteLine(material.m_fragmentShader.GetPath().wstring());
 }
 
 } // namespace RenderPlugin

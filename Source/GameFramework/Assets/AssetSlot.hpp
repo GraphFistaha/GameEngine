@@ -19,8 +19,8 @@ public:
   const IAsset * GetAsset() const noexcept;
 
 public:
-  static size_t ReadBinary(IFileReader & stream, AssetSlot & slot);
-  static void WriteBinary(IFileWriter & stream, const AssetSlot & slot);
+  static size_t ReadBinary(IBinaryFileReader & stream, AssetSlot & slot);
+  static void WriteBinary(IBinaryFileWriter & stream, const AssetSlot & slot);
 
 private:
   AssetType m_assetType;

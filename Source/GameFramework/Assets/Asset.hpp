@@ -17,7 +17,7 @@ enum class AssetType
   ShaderSource,  // glsl, hlsl, vert, frag, geom
   ShaderBinary,  // spv, dxil, cso
   ShaderInclude, // inc, hlsli, glsli
-  Material
+  Material, // mat
 };
 
 struct IAsset

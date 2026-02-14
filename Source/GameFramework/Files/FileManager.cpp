@@ -35,9 +35,13 @@ public:
 public:
   virtual void Mount(std::filesystem::path shortPath, MountPointUPtr && mountPoint) override;
   /// open file for reading
-  virtual FileReaderUPtr OpenRead(const std::filesystem::path & path) const override;
+  virtual BinaryFileReaderUPtr OpenReadBinary(const std::filesystem::path & path) const override;
   /// open file for writing
-  virtual FileWriterUPtr OpenWrite(const std::filesystem::path & path) const override;
+  virtual BinaryFileWriterUPtr OpenWriteBinary(const std::filesystem::path & path) const override;
+  /// open text file for reading
+  virtual TextFileReaderUPtr OpenReadText(const std::filesystem::path & path) const override;
+  /// open text file for writing
+  virtual TextFileWriterUPtr OpenWriteText(const std::filesystem::path & path) const override;
 
 private:
   template<typename ResultT>
@@ -104,24 +108,38 @@ ResultT FileManagerImpl::OpenImpl(const std::filesystem::path & path) const
   {
     if (mountPoint->Exists(miniPath))
     {
-      if constexpr (std::is_same_v<ResultT, FileReaderUPtr>)
-        return mountPoint->OpenRead(miniPath);
+      if constexpr (std::is_same_v<ResultT, BinaryFileReaderUPtr>)
+        return mountPoint->OpenReadBinary(miniPath);
+      else if constexpr (std::is_same_v<ResultT, TextFileReaderUPtr>)
+        return mountPoint->OpenReadText(miniPath);
+      else if constexpr (std::is_same_v<ResultT, TextFileWriterUPtr>)
+        return mountPoint->OpenWriteText(miniPath);
       else
-        return mountPoint->OpenWrite(miniPath);
+        return mountPoint->OpenWriteBinary(miniPath);
     }
   }
 
   return nullptr;
 }
 
-FileReaderUPtr FileManagerImpl::OpenRead(const std::filesystem::path & path) const
+BinaryFileReaderUPtr FileManagerImpl::OpenReadBinary(const std::filesystem::path & path) const
 {
-  return OpenImpl<FileReaderUPtr>(path);
+  return OpenImpl<BinaryFileReaderUPtr>(path);
 }
 
-FileWriterUPtr FileManagerImpl::OpenWrite(const std::filesystem::path & path) const
+BinaryFileWriterUPtr FileManagerImpl::OpenWriteBinary(const std::filesystem::path & path) const
 {
-  return OpenImpl<FileWriterUPtr>(path);
+  return OpenImpl<BinaryFileWriterUPtr>(path);
+}
+
+TextFileReaderUPtr FileManagerImpl::OpenReadText(const std::filesystem::path & path) const
+{
+  return OpenImpl<TextFileReaderUPtr>(path);
+}
+
+TextFileWriterUPtr FileManagerImpl::OpenWriteText(const std::filesystem::path & path) const
+{
+  return OpenImpl<TextFileWriterUPtr>(path);
 }
 
 

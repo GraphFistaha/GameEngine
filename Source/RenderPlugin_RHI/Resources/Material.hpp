@@ -16,8 +16,8 @@ public:
   const ShaderFile & GetFragmentShader() const & noexcept { return m_fragmentShader; }
 
 public:
-  static size_t ReadBinary(GameFramework::IFileReader & stream, Material & material);
-  static void WriteBinary(GameFramework::IFileWriter & stream, const Material & material);
+  static size_t ReadText(GameFramework::ITextFileReader & stream, Material & material);
+  static void WriteText(GameFramework::ITextFileWriter & stream, const Material & material);
 
 private:
   std::filesystem::path m_path;

@@ -8,6 +8,7 @@
 #include <Assets/Asset.hpp>
 #include <Assets/Utils.hpp>
 #include <Files/FileManager.hpp>
+#include <GameFramework.hpp>
 #include <Utility/StringUtils.hpp>
 
 namespace GameFramework
@@ -96,7 +97,7 @@ void AssetsRegistryImpl::SaveDatabase(const std::filesystem::path & path)
   constexpr char delimiter = ';';
   constexpr std::string_view header = "uuid;type;path\n";
 
-  if (FileWriterUPtr stream = GetFileManager().OpenWrite(path))
+  if (BinaryFileWriterUPtr stream = GetFileManager().OpenWriteBinary(path))
   {
     stream->WriteValue(header);
     for (auto && asset : m_assets)
@@ -114,19 +115,21 @@ void AssetsRegistryImpl::SaveDatabase(const std::filesystem::path & path)
 
 void AssetsRegistryImpl::LoadDatabase(const std::filesystem::path & path)
 {
-  if (FileReaderUPtr reader = GetFileManager().OpenRead(path))
+  bool res = false;
+  if (TextFileReaderUPtr reader = GetFileManager().OpenReadText(path))
   {
     std::vector<AssetUPtr> newAssets;
     std::unordered_map<Uuid, size_t> assetsByUuid;
     std::unordered_map<std::filesystem::path, size_t> assetsByPath;
 
-    std::string header;
+    std::wstring header;
     reader->ReadLine(header);
 
-    std::string line;
+    std::wstring line;
     while (size_t readSymbols = reader->ReadLine(line))
     {
-      std::vector<std::string_view> data = Utils::Split(line, ';');
+      std::wstring_view v{line};
+      std::vector<std::wstring_view> data = Utils::Split(v, L';');
       std::optional<Uuid> uuid = Uuid::MakeFromString(data[0]);
       AssetType type = details::StringToAssetType(data[1]);
       std::filesystem::path path = data[2];
@@ -138,6 +141,10 @@ void AssetsRegistryImpl::LoadDatabase(const std::filesystem::path & path)
         assetsByPath.insert({path, newAssets.size() - 1});
         assetsByUuid.insert({*uuid, newAssets.size() - 1});
       }
+      else
+      {
+        Log(GameFramework::LogMessageType::Warning, "unknown asset - ", line);
+      }
 
       line.clear();
     }
@@ -145,6 +152,11 @@ void AssetsRegistryImpl::LoadDatabase(const std::filesystem::path & path)
     m_assets = std::move(newAssets);
     m_assetsByUuids = std::move(assetsByUuid);
     m_assetsByPath = std::move(assetsByPath);
+    res = true;
+  }
+  if (res)
+  {
+    GetFileManager().Mount("/", CreateDirectoryMountPoint(path.parent_path()));
   }
 }
 

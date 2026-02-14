@@ -20,14 +20,14 @@ Rect2DRenderer::Rect2DRenderer(Scene2D_GPU & scene)
   subpassConfig.AddInputAttribute(0, 0, 0, 2, RHI::InputAttributeElementType::FLOAT);
   {
     auto && stream =
-      GameFramework::GetFileManager().OpenRead(g_shadersDirectory / "rect2d_vert.spv");
+      GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "rect2d_vert.spv");
     ShaderFile file;
     stream->ReadValue<ShaderFile>(file);
     subpassConfig.AttachShader(RHI::ShaderType::Vertex, file.GetSpirV());
   }
   {
     auto && stream =
-      GameFramework::GetFileManager().OpenRead(g_shadersDirectory / "rect2d_frag.spv");
+      GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "rect2d_frag.spv");
     ShaderFile file;
     stream->ReadValue<ShaderFile>(file);
     subpassConfig.AttachShader(RHI::ShaderType::Fragment, file.GetSpirV());

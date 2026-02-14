@@ -19,5 +19,8 @@ TARGET_COPY_ASSETS(
 	ASSETS_DIRECTORY "Data"
 	ASSETS
 	"assets.csv"
-	"Shaders/Cube.frag"
+	"Shaders/Cube1.frag"
+	"Shaders/Cube2.frag"
+	"Materials/Cube1.mat"
+	"Materials/Cube2.mat"
   )

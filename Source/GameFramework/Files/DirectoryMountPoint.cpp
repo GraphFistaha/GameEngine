@@ -17,9 +17,13 @@ public:
   /// Checks that file exists in mount point
   virtual bool Exists(const std::filesystem::path & path) const override;
   /// Open file stream for reading
-  virtual FileReaderUPtr OpenRead(const std::filesystem::path & path) override;
+  virtual BinaryFileReaderUPtr OpenReadBinary(const std::filesystem::path & path) override;
+  /// Open text file stream for reading
+  virtual TextFileReaderUPtr OpenReadText(const std::filesystem::path & path) override;
   /// Open file stream for writing
-  virtual FileWriterUPtr OpenWrite(const std::filesystem::path & path) override;
+  virtual BinaryFileWriterUPtr OpenWriteBinary(const std::filesystem::path & path) override;
+  /// Open text file stream for writing
+  virtual TextFileWriterUPtr OpenWriteText(const std::filesystem::path & path) override;
   /// enumerates all files and returns paths
   virtual std::vector<std::filesystem::path> ListFiles(
     const std::filesystem::path & rootPath = "") const override;
@@ -54,14 +58,24 @@ bool DirectoryMountPoint::Exists(const std::filesystem::path & path) const
   return false;
 }
 
-FileReaderUPtr DirectoryMountPoint::OpenRead(const std::filesystem::path & path)
+BinaryFileReaderUPtr DirectoryMountPoint::OpenReadBinary(const std::filesystem::path & path)
 {
   return OpenBinaryFileRead(m_rootPath / path);
 }
 
-FileWriterUPtr DirectoryMountPoint::OpenWrite(const std::filesystem::path & path)
+TextFileReaderUPtr DirectoryMountPoint::OpenReadText(const std::filesystem::path & path)
+{
+  return OpenTextFileRead(m_rootPath / path);
+}
+
+BinaryFileWriterUPtr DirectoryMountPoint::OpenWriteBinary(const std::filesystem::path & path)
 {
   return OpenBinaryFileWrite(m_rootPath / path);
+}
+
+TextFileWriterUPtr DirectoryMountPoint::OpenWriteText(const std::filesystem::path & path)
+{
+  return OpenTextFileWrite(m_rootPath / path);
 }
 
 std::vector<std::filesystem::path> DirectoryMountPoint::ListFiles(

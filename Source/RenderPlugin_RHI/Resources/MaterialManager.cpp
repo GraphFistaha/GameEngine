@@ -55,7 +55,7 @@ void MaterialManagerImpl::DoTasks()
     auto [it, inserted] = m_uploadedMaterials.insert({asset->GetUUID(), Material()});
     if (inserted)
     {
-      if (auto && stream = GameFramework::GetFileManager().OpenRead(asset->GetPath()))
+      if (auto && stream = GameFramework::GetFileManager().OpenReadText(asset->GetPath()))
         stream->ReadValue(it->second);
     }
   }

@@ -1,6 +1,7 @@
 #include <Constants.hpp>
 #include <Devices/ScreenDevice.hpp>
 #include <GameFramework.hpp>
+#include <Resources/MaterialManager.hpp>
 
 namespace RenderPlugin
 {
@@ -55,6 +56,7 @@ GameFramework::ScreenDeviceUPtr RenderPlugin_RHI::CreateScreenDevice(
 
 void RenderPlugin_RHI::Tick()
 {
+  GetMaterialManager().DoTasks();
   m_context->ClearResources();
   m_context->TransferPass();
 }

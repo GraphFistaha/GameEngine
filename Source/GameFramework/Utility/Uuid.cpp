@@ -69,6 +69,15 @@ std::optional<Uuid> Uuid::MakeFromString(const std::string_view & str)
   return Uuid(span);
 }
 
+std::optional<Uuid> Uuid::MakeFromString(const std::wstring_view & str)
+{
+  auto id = uuids::uuid::from_string(str);
+  if (!id.has_value())
+    return std::nullopt;
+  auto span = id->as_bytes();
+  return Uuid(span);
+}
+
 Uuid Uuid::MakeRandomUuid()
 {
   static Random random;
@@ -77,7 +86,7 @@ Uuid Uuid::MakeRandomUuid()
   return Uuid(span);
 }
 
-size_t Uuid::ReadBinary(IFileReader & stream, Uuid & uuid)
+size_t Uuid::ReadBinary(IBinaryFileReader & stream, Uuid & uuid)
 {
   std::array<std::byte, 16> src;
   size_t read = stream.Read(src);
@@ -87,7 +96,7 @@ size_t Uuid::ReadBinary(IFileReader & stream, Uuid & uuid)
   return read;
 }
 
-void Uuid::WriteBinary(IFileWriter & stream, const Uuid & uuid)
+void Uuid::WriteBinary(IBinaryFileWriter & stream, const Uuid & uuid)
 {
   std::span<const std::byte> buf(uuid.m_bytes, 16);
   stream.Write(buf);

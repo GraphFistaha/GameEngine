@@ -31,7 +31,7 @@ CubeRenderer::CubeRenderer(Scene3D_GPU & scene, const PipelineSettings & setting
   subpassConfig.AddInputAttribute(0, 3, 3 * sizeof(GameFramework::Vec4f), 4,
                                   RHI::InputAttributeElementType::FLOAT);
   {
-    auto && stream = GameFramework::GetFileManager().OpenRead(g_shadersDirectory / "Cube_vert.spv");
+    auto && stream = GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "Cube_vert.spv");
     ShaderFile file;
     stream->ReadValue<ShaderFile>(file);
     subpassConfig.AttachShader(RHI::ShaderType::Vertex, file.GetSpirV());
