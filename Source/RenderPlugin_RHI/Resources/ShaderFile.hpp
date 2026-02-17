@@ -6,6 +6,7 @@
 namespace RenderPlugin
 {
 
+/// precompiled shader spir-v file
 class ShaderFile final
 {
 public:

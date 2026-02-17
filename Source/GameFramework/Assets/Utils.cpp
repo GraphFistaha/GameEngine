@@ -61,7 +61,7 @@ AssetType GetAssetTypeByPath(const std::filesystem::path & path) noexcept
     return it->second;
 }
 
-std::wstring_view AssetTypeToString(AssetType type) noexcept
+GAME_FRAMEWORK_API  std::wstring_view AssetTypeToWString(AssetType type) noexcept
 {
   switch (type)
   {
@@ -84,6 +84,32 @@ std::wstring_view AssetTypeToString(AssetType type) noexcept
     case AssetType::Unknown:
     default:
       return L"Unknown";
+  }
+}
+
+GAME_FRAMEWORK_API  std::string_view AssetTypeToString(AssetType type) noexcept
+{
+  switch (type)
+  {
+    case AssetType::Text:
+      return "Text";
+    case AssetType::Config:
+      return "Config";
+    case AssetType::Picture:
+      return "Picture";
+    case AssetType::Audio:
+      return "Audio";
+    case AssetType::ShaderSource:
+      return "ShaderSource";
+    case AssetType::ShaderBinary:
+      return "ShaderBinary";
+    case AssetType::ShaderInclude:
+      return "ShaderInclude";
+    case AssetType::Material:
+      return "Material";
+    case AssetType::Unknown:
+    default:
+      return "Unknown";
   }
 }
 

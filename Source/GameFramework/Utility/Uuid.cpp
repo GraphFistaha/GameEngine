@@ -6,6 +6,8 @@
 #include <Utility/Random.hpp>
 #include <uuid.h> //stduuid
 
+#include "Uuid.hpp"
+
 namespace GameFramework
 {
 
@@ -48,6 +50,12 @@ bool Uuid::operator<(const Uuid & rhs) const noexcept
   const uuids::uuid * l = reinterpret_cast<const uuids::uuid *>(m_bytes);
   const uuids::uuid * r = reinterpret_cast<const uuids::uuid *>(rhs.m_bytes);
   return *l < *r;
+}
+
+
+bool Uuid::IsNull() const noexcept
+{
+  return reinterpret_cast<const uuids::uuid *>(m_bytes)->is_nil();
 }
 
 size_t Uuid::Hash() const noexcept

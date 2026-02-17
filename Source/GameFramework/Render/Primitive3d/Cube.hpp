@@ -13,7 +13,7 @@ struct GAME_FRAMEWORK_API Cube : public IRenderPrimitive
 
 public:
   const Mat4f & GetTransform() const & noexcept;
-  const IAsset * GetMaterial() const noexcept;
+  const Asset * GetMaterial() const noexcept;
 
 public: // IHashable
   size_t Hash() const noexcept;

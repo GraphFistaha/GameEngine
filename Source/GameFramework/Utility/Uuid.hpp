@@ -23,11 +23,14 @@ struct GAME_FRAMEWORK_API Uuid final
   bool operator!=(const Uuid & rhs) const noexcept;
   bool operator<(const Uuid & rhs) const noexcept;
 
+  operator bool() const noexcept { return !IsNull(); }
+  bool IsNull() const noexcept;
+
   size_t Hash() const noexcept;
   std::string ToString() const noexcept;
 
   static std::optional<Uuid> MakeFromString(const std::string_view & str);
-  static std::optional<Uuid> MakeFromString(const std::wstring_view& str);
+  static std::optional<Uuid> MakeFromString(const std::wstring_view & str);
   static Uuid MakeRandomUuid();
 
 public:

@@ -13,13 +13,13 @@ struct MaterialManagerImpl : public MaterialManager
   virtual ~MaterialManagerImpl() override = default;
 
 public: // MaterialManager
-  virtual const Material * LoadMaterial(const GameFramework::IAsset * asset) override;
+  virtual const Material * LoadMaterial(const GameFramework::Asset * asset) override;
   virtual void DoTasks() override;
 
 private:
   Material m_nullMaterial;
   std::mutex m_uploadLock;
-  std::vector<const GameFramework::IAsset *> m_tasksToUpload;
+  std::vector<const GameFramework::Asset *> m_tasksToUpload;
   std::unordered_map<GameFramework::Uuid, Material> m_uploadedMaterials;
 };
 
@@ -28,7 +28,7 @@ MaterialManagerImpl::MaterialManagerImpl()
 {
 }
 
-const Material * MaterialManagerImpl::LoadMaterial(const GameFramework::IAsset * asset)
+const Material * MaterialManagerImpl::LoadMaterial(const GameFramework::Asset * asset)
 {
   if (asset == nullptr)
     return &m_nullMaterial;

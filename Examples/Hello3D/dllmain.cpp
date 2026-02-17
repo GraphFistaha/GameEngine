@@ -55,7 +55,7 @@ Hello3D::Hello3D()
 {
   m_camera.SetPosition(Vec3f{0, 0, -10});
 
-  GetAssetsRegistry().LoadDatabase("Data/assets.csv"); 
+  GetAssetsRegistry().LoadDatabase("./Data"); 
   mat1 = GetAssetsRegistry().GetAsset("Materials/Cube1.mat")->GetUUID();
   mat2 = GetAssetsRegistry().GetAsset("Materials/Cube2.mat")->GetUUID();
 }

@@ -6,6 +6,7 @@ PUBLIC
 	"Test_StaticString.cpp"
 	"Test_Storage.cpp"
 	"Test_Files.cpp"
+	"Test_Assets.cpp"
 )
 
 find_package(Catch2 REQUIRED)
@@ -14,3 +15,4 @@ target_link_libraries(${test_target}  PRIVATE
 	Catch2::Catch2WithMain
 	GameFramework
 )
+add_test(NAME ${this_target} COMMAND $<TARGET_FILE:${this_target}>)

@@ -2,57 +2,74 @@
 
 #include <Assets/Utils.hpp>
 
+#include "Asset.hpp"
+
 namespace GameFramework
 {
 
-struct AssetImpl : public IAsset
+struct Asset::Impl final
 {
-  explicit AssetImpl(const std::filesystem::path & path);
-  explicit AssetImpl(const std::filesystem::path & path, const Uuid & uuid, AssetType type);
-
-  virtual Uuid GetUUID() const noexcept override { return m_uuid; }
-  virtual std::filesystem::path GetPath() const noexcept override { return m_path; }
-  virtual AssetType GetType() const noexcept override { return m_type; }
-  virtual void AddUser() override { m_refCounter++; }
-  virtual void ReleaseUser() override { m_refCounter--; }
-  virtual size_t GetUsersCount() const noexcept override { return m_refCounter; }
-
-  // IHashable interface
-  virtual size_t Hash() const noexcept { return m_uuid.Hash(); }
-
-private:
-  std::filesystem::path m_path;
-  Uuid m_uuid;
   AssetType m_type;
-  std::atomic_size_t m_refCounter = 0;
+  Uuid m_uuid;
+  std::filesystem::path m_path;
   //probably should contain a list of users - another game objects which are use this asset
 };
 
-AssetImpl::AssetImpl(const std::filesystem::path & path)
-  : m_path(path)
-  , m_type(details::GetAssetTypeByPath(path))
-  , m_uuid(Uuid::MakeRandomUuid())
+#define TO_IMPL(member)       reinterpret_cast<Impl *>(member)
+#define TO_CONST_IMPL(member) reinterpret_cast<const Impl *>(member)
+
+Asset::Asset(AssetType type, const Uuid & uuid, const std::filesystem::path & path)
 {
+  static_assert(sizeof(Impl) <= sizeof(Asset::m_impl));
+  new (m_impl) Impl{type, uuid, path};
 }
 
-AssetImpl::AssetImpl(const std::filesystem::path & path, const Uuid & uuid, AssetType type)
-  : m_path(path)
-  , m_uuid(uuid)
-  , m_type(type)
+Asset::~Asset() noexcept
 {
+ TO_IMPL(m_impl)->~Impl();
 }
+
+Asset::Asset(Asset && rhs) noexcept
+{
+  new (m_impl) Impl(std::move(*TO_IMPL(rhs.m_impl)));
+}
+
+Asset & Asset::operator=(Asset && rhs) noexcept
+{
+  if (this != &rhs)
+  {
+    new (m_impl) Impl(std::move(*TO_IMPL(rhs.m_impl)));
+  }
+  return *this;
+}
+
+Asset::Asset(const Asset & rhs)
+{
+  new (m_impl) Impl(*TO_CONST_IMPL(rhs.m_impl));
+}
+
+Asset & Asset::operator=(const Asset & rhs)
+{
+  if (this != &rhs)
+  {
+    new (m_impl) Impl(*TO_CONST_IMPL(rhs.m_impl));
+  }
+  return *this;
+}
+
+Uuid Asset::GetUUID() const noexcept
+{
+  return TO_CONST_IMPL(m_impl)->m_uuid;
+}
+
+std::filesystem::path Asset::GetPath() const noexcept
+{
+  return TO_CONST_IMPL(m_impl)->m_path;
+}
+
+AssetType Asset::GetType() const noexcept
+{
+  return TO_CONST_IMPL(m_impl)->m_type;
+}
+
 } // namespace GameFramework
-
-namespace GameFramework::details
-{
-
-AssetUPtr CreateAsset(const std::filesystem::path & path)
-{
-  return std::make_unique<AssetImpl>(path);
-}
-
-AssetUPtr FillAsset(const Uuid & uuid, AssetType type, const std::filesystem::path & path)
-{
-  return std::make_unique<AssetImpl>(path, uuid, type);
-}
-} // namespace GameFramework::details

@@ -25,7 +25,7 @@ const Mat4f & Cube::GetTransform() const & noexcept
   return m_transform;
 }
 
-const IAsset * Cube::GetMaterial() const noexcept
+const Asset * Cube::GetMaterial() const noexcept
 {
   return m_material.GetAsset();
 }

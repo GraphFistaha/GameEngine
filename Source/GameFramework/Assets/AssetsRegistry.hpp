@@ -10,33 +10,25 @@
 namespace GameFramework
 {
 
+static constexpr std::wstring_view s_assetsModuleFilename = L".assetList";
+
+/// Total data base of all assets in application
 struct AssetsRegistry
 {
   virtual ~AssetsRegistry() = default;
 
-  /// @brief Add asset to the registry
-  /// @param path
-  /// @param asset
-  /// @return
-  virtual std::optional<Uuid> RegisterAsset(const std::filesystem::path & path) = 0;
-
-  /// @brief delete asset from registry
-  /// @param path
-  virtual void UnregisterAsset(const Uuid & uuid) = 0;
-
-  /// @brief uploads all meta-assets into the file in disk
-  /// @param path to the file of database
-  virtual void SaveDatabase(const std::filesystem::path & path) = 0;
+  /// @brief deletes database from memory
+  virtual void DeleteDatabase(const std::filesystem::path & folder) = 0;
 
   /// @brief loads entire database of meta-assets to RAM
-  /// @param path to the file of database
-  virtual void LoadDatabase(const std::filesystem::path & path) = 0;
+  /// @param folder with assets (must contain .assetList)
+  virtual void LoadDatabase(const std::filesystem::path & folder) = 0;
 
   /// @brief get asset by uuid
-  virtual const IAsset * GetAsset(const Uuid & uuid) const = 0;
+  virtual const Asset * GetAsset(const Uuid & uuid) const = 0;
 
   /// @brief get asset by path
-  virtual const IAsset * GetAsset(const std::filesystem::path & path) const = 0;
+  virtual const Asset * GetAsset(const std::filesystem::path & path) const = 0;
 };
 
 using AssetsRegisryUPtr = std::unique_ptr<AssetsRegistry>;

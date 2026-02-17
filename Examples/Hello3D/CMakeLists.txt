@@ -18,7 +18,7 @@ TARGET_COPY_ASSETS(
 	TARGET ${this_target}
 	ASSETS_DIRECTORY "Data"
 	ASSETS
-	"assets.csv"
+	".assetList"
 	"Shaders/Cube1.frag"
 	"Shaders/Cube2.frag"
 	"Materials/Cube1.mat"

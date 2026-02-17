@@ -1,7 +1,6 @@
 #include "ShaderFile.hpp"
 
 #include <cassert>
-#include <fstream>
 #include <span>
 
 namespace RenderPlugin

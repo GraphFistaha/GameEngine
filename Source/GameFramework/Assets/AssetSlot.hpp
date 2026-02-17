@@ -16,7 +16,7 @@ public:
   void SetAsset(const Uuid & uuid);
   void SetAsset(const std::filesystem::path & path);
   void ClearAsset();
-  const IAsset * GetAsset() const noexcept;
+  const Asset * GetAsset() const noexcept;
 
 public:
   static size_t ReadBinary(IBinaryFileReader & stream, AssetSlot & slot);
@@ -24,7 +24,7 @@ public:
 
 private:
   AssetType m_assetType;
-  IAsset * m_asset = nullptr;
+  Asset * m_asset = nullptr;
 };
 
 } // namespace GameFramework
