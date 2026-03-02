@@ -8,16 +8,16 @@ project(GameFramework C CXX)
 option(BUILD_EXAMPLES "Build example programs" ON)
 
 set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/Source)
-set(APP_DIR ${PROJECT_SOURCE_DIR}/Build/${CMAKE_BUILD_TYPE})
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${APP_DIR}/Obj)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${APP_DIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${APP_DIR})
 
 set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_C_STANDATD 17)
 cmake_policy(SET CMP0060 NEW)
 include (${SOURCE_DIR}/assets.cmake)
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/Build/${CMAKE_BUILD_TYPE}" CACHE PATH "Installation directory" FORCE)
+endif()
+message(STATUS "Install directory is ${CMAKE_INSTALL_PREFIX}")
 
 # -------------------- Install conan packages ----------------------
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conanfile.txt")
@@ -32,10 +32,18 @@ message(status ${settings})
 conan_cmake_install(PATH_OR_REFERENCE .
                     BUILD missing
                     REMOTE conancenter
-                    SETTINGS ${settings})
+                    SETTINGS ${settings}
+                    OUTPUT_FOLDER ${PROJECT_BINARY_DIR}/ConanResult
+)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR}/build/generators)
-list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/build/generators)
+# TODO: do not find conan_toolchain, make it with CMakePresets
+file(GLOB_RECURSE ToolchainFile
+     "${PROJECT_BINARY_DIR}/ConanResult/**/conan_toolchain.cmake"
+)
+get_filename_component(GeneratorsFolder ${ToolchainFile} DIRECTORY)
+
+list(APPEND CMAKE_MODULE_PATH ${GeneratorsFolder})
+list(APPEND CMAKE_PREFIX_PATH ${GeneratorsFolder})
 
 # ------------------------- Build projects ------------------------------
 add_subdirectory(ThirdParty)

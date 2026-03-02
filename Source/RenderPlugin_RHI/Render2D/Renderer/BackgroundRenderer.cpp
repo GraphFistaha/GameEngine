@@ -1,9 +1,10 @@
 #include "BackgroundRenderer.hpp"
 
+#include <Assets/AssetCache.hpp>
 #include <Constants.hpp>
 #include <GameFramework.hpp>
 #include <Render2D/Scene2D_GPU.hpp>
-#include <Resources/ShaderFile.hpp>
+#include <Resources/ShadersCache.hpp>
 
 namespace RenderPlugin
 {
@@ -11,8 +12,8 @@ BackgroundRenderer::BackgroundRenderer(Scene2D_GPU & scene)
   : OwnedBy<Scene2D_GPU>(scene)
   , m_renderPass(scene.GetDevice().GetFramebuffer().CreateSubpass())
   , m_colorBuffer(scene.GetDevice().GetContext().CreateBuffer(3 * sizeof(float),
-                                                             RHI::BufferGPUUsage::UniformBuffer,
-                                                             true))
+                                                              RHI::BufferGPUUsage::UniformBuffer,
+                                                              true))
 {
   auto && subpassConfig = m_renderPass->GetConfiguration();
   scene.GetDevice().ConfigurePipeline(subpassConfig);
@@ -21,18 +22,20 @@ BackgroundRenderer::BackgroundRenderer(Scene2D_GPU & scene)
   m_colorDescriptor = subpassConfig.DeclareUniform({0, 0}, RHI::ShaderType::Fragment);
   m_colorDescriptor->AssignBuffer(*m_colorBuffer);
   {
-    auto && stream =
-      GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "background_vert.spv");
-    ShaderFile file;
-    stream->ReadValue<ShaderFile>(file);
-    subpassConfig.AttachShader(RHI::ShaderType::Vertex, file.GetSpirV());
+    std::shared_ptr<ShaderFile> vertShader;
+    if (auto * asset = GameFramework::GetAssetsRegistry().GetAsset("Shaders/2D/background.vert"))
+      if (auto * cache = GameFramework::GetAssetCacheRegistry().Get<ShadersCache>())
+        vertShader = cache->Load<ShaderFile>(asset, false /*async*/);
+    if (vertShader)
+      subpassConfig.AttachShader(RHI::ShaderType::Vertex, vertShader->GetSpirV());
   }
   {
-    auto && stream =
-      GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "background_frag.spv");
-    ShaderFile file;
-    stream->ReadValue<ShaderFile>(file);
-    subpassConfig.AttachShader(RHI::ShaderType::Fragment, file.GetSpirV());
+    std::shared_ptr<ShaderFile> fragShader;
+    if (auto * asset = GameFramework::GetAssetsRegistry().GetAsset("Shaders/2D/background.frag"))
+      if (auto * cache = GameFramework::GetAssetCacheRegistry().Get<ShadersCache>())
+        fragShader = cache->Load<ShaderFile>(asset, false /*async*/);
+    if (fragShader)
+      subpassConfig.AttachShader(RHI::ShaderType::Fragment, fragShader->GetSpirV());
   }
 }
 

@@ -87,6 +87,7 @@ int main(int argc, const char * argv[])
     for (auto && controller : inputControllers)
       controller->GenerateInputEvents();
     gameInstance->ProcessInput();
+    GameFramework::GetAsyncWorker().DoTasks();
 
     renderManager->Tick();
 

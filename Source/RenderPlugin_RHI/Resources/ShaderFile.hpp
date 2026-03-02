@@ -1,13 +1,14 @@
 #pragma once
 #include <vector>
 
+#include <Assets/Asset.hpp>
 #include <Files/FileStream.hpp>
 
 namespace RenderPlugin
 {
 
 /// precompiled shader spir-v file
-class ShaderFile final
+class ShaderFile final : public GameFramework::IAssetData
 {
 public:
   ShaderFile() = default;
@@ -15,11 +16,13 @@ public:
   std::filesystem::path GetPath() const noexcept { return m_path; }
   const std::vector<uint32_t> & GetSpirV() const & noexcept { return m_data; }
 
-  bool IsEmpty() const noexcept;
+  virtual bool IsReadyToUse() const noexcept override;
 
 public:
   static size_t ReadBinary(GameFramework::IBinaryFileReader & stream, ShaderFile & file);
-  static void WriteBinary(GameFramework::IBinaryFileWriter & stream, const ShaderFile & file);
+
+public:
+  static size_t ReadText(GameFramework::ITextFileReader & stream, ShaderFile & result);
 
 public: //Hashable
   size_t Hash() const noexcept;

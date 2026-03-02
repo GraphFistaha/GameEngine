@@ -36,6 +36,10 @@ private:
 DirectoryMountPoint::DirectoryMountPoint(const std::filesystem::path & path)
   : m_rootPath(path)
 {
+  if (!std::filesystem::exists(m_rootPath))
+  {
+    std::filesystem::create_directory(m_rootPath);
+  }
   for (auto && entry : std::filesystem::recursive_directory_iterator(m_rootPath))
   {
     if (entry.is_regular_file())

@@ -6,22 +6,25 @@
 namespace RenderPlugin
 {
 
-struct Material
+struct Material : public GameFramework::IAssetData
 {
   Material() = default;
   explicit Material(std::nullptr_t);
 
 public:
   std::filesystem::path GetPath() const noexcept { return m_path; }
-  const ShaderFile & GetFragmentShader() const & noexcept { return m_fragmentShader; }
+  const std::filesystem::path & GetFragmentShader() const & noexcept { return m_shaderPath; }
 
 public:
   static size_t ReadText(GameFramework::ITextFileReader & stream, Material & material);
   static void WriteText(GameFramework::ITextFileWriter & stream, const Material & material);
 
+public:
+  virtual bool IsReadyToUse() const noexcept override;
+
 private:
   std::filesystem::path m_path;
-  ShaderFile m_fragmentShader; ///< fragment shader
+  std::filesystem::path m_shaderPath;
 };
 
 } // namespace RenderPlugin

@@ -6,7 +6,7 @@
 #include <Constants.hpp>
 #include <GameFramework.hpp>
 #include <Render3D/Scene3D_GPU.hpp>
-#include <Resources/ShaderFile.hpp>
+#include <Resources/ShadersCache.hpp>
 
 namespace RenderPlugin
 {
@@ -31,10 +31,12 @@ CubeRenderer::CubeRenderer(Scene3D_GPU & scene, const PipelineSettings & setting
   subpassConfig.AddInputAttribute(0, 3, 3 * sizeof(GameFramework::Vec4f), 4,
                                   RHI::InputAttributeElementType::FLOAT);
   {
-    auto && stream = GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "Cube_vert.spv");
-    ShaderFile file;
-    stream->ReadValue<ShaderFile>(file);
-    subpassConfig.AttachShader(RHI::ShaderType::Vertex, file.GetSpirV());
+    std::shared_ptr<ShaderFile> vertShader;
+    if (auto * asset = GameFramework::GetAssetsRegistry().GetAsset("Shaders/3D/Cube.vert"))
+      if (auto * cache = GameFramework::GetAssetCacheRegistry().Get<ShadersCache>())
+        vertShader = cache->Load<ShaderFile>(asset, false /*async*/);
+    if (vertShader)
+      subpassConfig.AttachShader(RHI::ShaderType::Vertex, vertShader->GetSpirV());
   }
   subpassConfig.AttachShader(RHI::ShaderType::Fragment, settings.GetShader().GetSpirV());
   m_vpDescriptor = subpassConfig.DeclareUniform({0, 0}, RHI::ShaderType::Vertex);

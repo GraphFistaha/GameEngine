@@ -13,11 +13,12 @@ PRIVATE
 
 	"Resources/Material.hpp"
 	"Resources/Material.cpp"
-	"Resources/MaterialManager.hpp"
-	"Resources/MaterialManager.cpp"
+	"Resources/MaterialCache.hpp"
+	"Resources/MaterialCache.cpp"
 	"Resources/ShaderFile.hpp"
 	"Resources/ShaderFile.cpp"
-	"Resources/NullShader.frag"
+	"Resources/ShadersCache.cpp"
+	"Resources/ShadersCache.hpp"
 
 	"Devices/InternalDeviceInterface.hpp"
 	"Devices/ScreenDevice.cpp"
@@ -57,18 +58,29 @@ PRIVATE
 	SHADERS_DIRECTORY=".shaders"
 )
 
-include(Resources/CompileSpirV.cmake)
+#TARGET_PRECOMPILE_SPIRV(
+#TARGET ${this_target} 
+#SHADERS_DIRECTORY ".shaders"
+#SHADERS
+#	"Render2D/Shaders/background.vert"
+#	"Render2D/Shaders/background.frag"
+#	"Render2D/Shaders/rect2d.frag"
+#	"Render2D/Shaders/rect2d.vert"
 
-TARGET_PRECOMPILE_SPIRV(
-TARGET ${this_target} 
-SHADERS_DIRECTORY ".shaders"
-SHADERS
-	"Resources/NullShader.frag"
-	"Render2D/Shaders/background.vert"
-	"Render2D/Shaders/background.frag"
-	"Render2D/Shaders/rect2d.frag"
-	"Render2D/Shaders/rect2d.vert"
+#	"Render3D/Shaders/Cube.frag"
+#	"Render3D/Shaders/Cube.vert"
+#)
 
-	"Render3D/Shaders/Cube.frag"
-	"Render3D/Shaders/Cube.vert"
+TARGET_ASSETS_DIRECTORY(
+	TARGET ${this_target}
+	DIRECTORY "./Assets"
+	RESULT_DIRECTORY "Bin/RenderPluginData"
+)
+
+install(TARGETS ${this_target}
+  EXPORT ${this_target}
+  RUNTIME DESTINATION Bin
+  LIBRARY DESTINATION Lib
+  ARCHIVE DESTINATION Lib
+  INCLUDES DESTINATION include
 )

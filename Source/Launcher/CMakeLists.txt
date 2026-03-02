@@ -23,7 +23,10 @@ PUBLIC
 	"${SOURCE_DIR}/Launcher"
 )
 
-target_link_libraries(${this_target}
-PRIVATE
-	
+install(TARGETS ${this_target}
+  EXPORT ${this_target}
+  RUNTIME DESTINATION Bin
+  LIBRARY DESTINATION Lib
+  ARCHIVE DESTINATION Lib
+  INCLUDES DESTINATION include
 )

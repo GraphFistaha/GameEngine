@@ -165,6 +165,6 @@ namespace GameFramework
 GAME_FRAMEWORK_API BinaryFileWriterUPtr OpenBinaryFileWrite(const std::filesystem::path & path);
 GAME_FRAMEWORK_API BinaryFileReaderUPtr OpenBinaryFileRead(const std::filesystem::path & path);
 GAME_FRAMEWORK_API TextFileReaderUPtr OpenTextFileRead(const std::filesystem::path & path);
-GAME_FRAMEWORK_API TextFileWriterUPtr OpenTextFileWrite(const std::filesystem::path& path);
+GAME_FRAMEWORK_API TextFileWriterUPtr OpenTextFileWrite(const std::filesystem::path & path);
 
 } // namespace GameFramework

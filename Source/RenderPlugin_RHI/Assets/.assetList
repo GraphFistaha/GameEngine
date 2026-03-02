@@ -1,0 +1,9 @@
+uuid;type;path
+E24EEEAB-83FF-4EBD-99D7-06702834247E;ShaderSource;Shaders/NullShader.frag
+CC5E2C9D-666D-41F1-8E6B-3F6BCC96D8F6;Material;Materials/NullMaterial.mat
+F74BD073-6995-400C-A4CA-1085F469A61B;ShaderSource;Shaders/2D/background.frag
+3C38FD1F-B10A-423E-889E-CAE58FC99586;ShaderSource;Shaders/2D/background.vert
+6FF9519D-F99D-4BA1-80A4-B11E8CB11798;ShaderSource;Shaders/2D/rect2d.frag
+34211B68-0F47-48BE-9CC3-5B57469ED11D;ShaderSource;Shaders/2D/rect2d.vert
+3847662A-2C30-4B1B-9762-48004C6AC7EB;ShaderSource;Shaders/3D/Cube.frag
+51C8E71B-9CA8-48AA-A3A1-E519C49B899C;ShaderSource;Shaders/3D/Cube.vert

@@ -16,6 +16,7 @@ struct GAME_FRAMEWORK_API Uuid final
 {
   Uuid();
   explicit Uuid(std::span<const char, 16> bytes16);
+  explicit Uuid(std::span<const unsigned char, 16> bytes16);
   explicit Uuid(std::span<const std::byte, 16> bytes16);
   ~Uuid();
 

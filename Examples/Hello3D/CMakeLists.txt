@@ -14,13 +14,16 @@ PUBLIC
 	glm::glm
 )
 
-TARGET_COPY_ASSETS(
-	TARGET ${this_target}
-	ASSETS_DIRECTORY "Data"
-	ASSETS
-	".assetList"
-	"Shaders/Cube1.frag"
-	"Shaders/Cube2.frag"
-	"Materials/Cube1.mat"
-	"Materials/Cube2.mat"
-  )
+TARGET_ASSETS_DIRECTORY(
+	  TARGET ${this_target}
+	  DIRECTORY "Data"
+	  RESULT_DIRECTORY "Bin/Examples/${this_target}_Data"
+)
+
+install(TARGETS ${this_target}
+  EXPORT ${this_target}
+  RUNTIME DESTINATION Bin/Examples
+  LIBRARY DESTINATION Lib/Examples
+  ARCHIVE DESTINATION Lib/Examples
+  INCLUDES DESTINATION include/Examples
+)

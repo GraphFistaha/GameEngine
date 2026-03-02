@@ -23,6 +23,12 @@ Uuid::Uuid(std::span<const char, 16> bytes16)
     m_bytes[i] = static_cast<std::byte>(bytes16[i]);
 }
 
+Uuid::Uuid(std::span<const unsigned char, 16> bytes16)
+{
+  for (size_t i = 0; i < 16; ++i)
+    m_bytes[i] = static_cast<std::byte>(bytes16[i]);
+}
+
 Uuid::Uuid(std::span<const std::byte, 16> bytes16)
 {
   for (size_t i = 0; i < 16; ++i)

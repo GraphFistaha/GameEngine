@@ -27,7 +27,7 @@ class Hello3D : public GameFramework::GamePlugin
   GameFramework::Uuid mat2;
 
 public:
-  Hello3D();
+  Hello3D(const std::filesystem::path & path);
   virtual ~Hello3D() override = default;
 
   virtual std::string GetGameName() const override { return "Hello3D"; }
@@ -51,11 +51,11 @@ private:
   std::vector<SignalsQueue *> m_boundSignalsQueue;
 };
 
-Hello3D::Hello3D()
+Hello3D::Hello3D(const std::filesystem::path & path)
 {
   m_camera.SetPosition(Vec3f{0, 0, -10});
 
-  GetAssetsRegistry().LoadDatabase("./Data"); 
+  GetAssetsRegistry().LoadDatabase(path / "Hello3D_Data");
   mat1 = GetAssetsRegistry().GetAsset("Materials/Cube1.mat")->GetUUID();
   mat2 = GetAssetsRegistry().GetAsset("Materials/Cube2.mat")->GetUUID();
 }
@@ -139,5 +139,5 @@ void Hello3D::Render(GameFramework::IDevice & device)
 PLUGIN_API std::unique_ptr<GameFramework::IPluginInstance> CreateInstance(
   const GameFramework::IPluginLoader & loader)
 {
-  return std::make_unique<Hello3D>();
+  return std::make_unique<Hello3D>(loader.Path());
 }

@@ -3,7 +3,7 @@
 #include <Constants.hpp>
 #include <GameFramework.hpp>
 #include <Render2D/Scene2D_GPU.hpp>
-#include <Resources/ShaderFile.hpp>
+#include <Resources/ShadersCache.hpp>
 
 namespace RenderPlugin
 {
@@ -19,18 +19,20 @@ Rect2DRenderer::Rect2DRenderer(Scene2D_GPU & scene)
   subpassConfig.AddInputBinding(0, 2 * sizeof(float), RHI::InputBindingType::VertexData);
   subpassConfig.AddInputAttribute(0, 0, 0, 2, RHI::InputAttributeElementType::FLOAT);
   {
-    auto && stream =
-      GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "rect2d_vert.spv");
-    ShaderFile file;
-    stream->ReadValue<ShaderFile>(file);
-    subpassConfig.AttachShader(RHI::ShaderType::Vertex, file.GetSpirV());
+    std::shared_ptr<ShaderFile> vertShader;
+    if (auto * asset = GameFramework::GetAssetsRegistry().GetAsset("Shaders/2D/rect2d.vert"))
+      if (auto * cache = GameFramework::GetAssetCacheRegistry().Get<ShadersCache>())
+        vertShader = cache->Load<ShaderFile>(asset, false /*async*/);
+    if (vertShader)
+      subpassConfig.AttachShader(RHI::ShaderType::Vertex, vertShader->GetSpirV());
   }
   {
-    auto && stream =
-      GameFramework::GetFileManager().OpenReadBinary(g_shadersDirectory / "rect2d_frag.spv");
-    ShaderFile file;
-    stream->ReadValue<ShaderFile>(file);
-    subpassConfig.AttachShader(RHI::ShaderType::Fragment, file.GetSpirV());
+    std::shared_ptr<ShaderFile> fragShader;
+    if (auto * asset = GameFramework::GetAssetsRegistry().GetAsset("Shaders/2D/rect2d.frag"))
+      if (auto * cache = GameFramework::GetAssetCacheRegistry().Get<ShadersCache>())
+        fragShader = cache->Load<ShaderFile>(asset, false /*async*/);
+    if (fragShader)
+      subpassConfig.AttachShader(RHI::ShaderType::Fragment, fragShader->GetSpirV());
   }
 }
 
@@ -41,7 +43,8 @@ Rect2DRenderer::~Rect2DRenderer()
 }
 
 
-void Rect2DRenderer::TrySetRects(size_t newHash, std::span<const GameFramework::Render::Rect2d> rects)
+void Rect2DRenderer::TrySetRects(size_t newHash,
+                                 std::span<const GameFramework::Render::Rect2d> rects)
 {
   if (newHash != m_hash)
   {
@@ -67,7 +70,7 @@ void Rect2DRenderer::TrySetRects(size_t newHash, std::span<const GameFramework::
     {
       RHI::IBufferGPU * newVerticesBuffer =
         GetScene().GetDevice().GetContext().CreateBuffer(newCapacity * 6 * 2 * sizeof(float),
-                                                        RHI::BufferGPUUsage::VertexBuffer, false);
+                                                         RHI::BufferGPUUsage::VertexBuffer, false);
       //TODO: Delete old verticesBuffer
       m_verticesBuffer = newVerticesBuffer;
     }

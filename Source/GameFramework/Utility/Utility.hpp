@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 
 namespace GameFramework::Utils
@@ -40,4 +41,56 @@ struct overloaded : Ts...
 template<class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
 
+template<typename Derived, typename Base>
+  requires(std::is_base_of_v<Base, Derived>)
+Derived * FastDynamicCast(Base * base) noexcept
+{
+#ifdef SAFE_INHERITED_CAST
+  return dynamic_cast<Derived *>(base);
+#else
+  return static_cast<Derived *>(base);
+#endif
+}
+
+template<typename Derived, typename Base>
+  requires(std::is_base_of_v<Base, Derived>)
+std::shared_ptr<Derived> FastDynamicCast(std::shared_ptr<Base> base) noexcept
+{
+#ifdef SAFE_INHERITED_CAST
+  return std::dynamic_pointer_cast<Derived>(base);
+#else
+  return std::static_pointer_cast<Derived>(base);
+#endif
+}
+
 } // namespace GameFramework::Utils
+
+#define ON_STARTUP_CONCAT_DETAIL(x, y) x##y
+#define ON_STARTUP_CONCAT(x, y)        ON_STARTUP_CONCAT_DETAIL(x, y)
+#define ON_STARTUP                                                                                 \
+  static void ON_STARTUP_CONCAT(_on_startup_func_, __LINE__)();                                    \
+  namespace                                                                                        \
+  {                                                                                                \
+  struct ON_STARTUP_CONCAT(_on_startup_runner_, __LINE__)                                          \
+  {                                                                                                \
+    ON_STARTUP_CONCAT(_on_startup_runner_, __LINE__)()                                             \
+    {                                                                                              \
+      ON_STARTUP_CONCAT(_on_startup_func_, __LINE__)();                                            \
+    }                                                                                              \
+  } ON_STARTUP_CONCAT(_on_startup_instance_, __LINE__);                                            \
+  }                                                                                                \
+  static void ON_STARTUP_CONCAT(_on_startup_func_, __LINE__)()
+
+#define ON_SHUTDOWN                                                                                \
+  static void ON_STARTUP_CONCAT(_on_shutdown_func_, __LINE__)();                                    \
+  namespace                                                                                        \
+  {                                                                                                \
+  struct ON_STARTUP_CONCAT(_on_shutdown_runner_, __LINE__)                                          \
+  {                                                                                                \
+    ON_STARTUP_CONCAT(~_on_shutdown_runner_, __LINE__)()                                             \
+    {                                                                                              \
+      ON_STARTUP_CONCAT(_on_shutdown_func_, __LINE__)();                                            \
+    }                                                                                              \
+  } ON_STARTUP_CONCAT(_on_shutdown_instance_, __LINE__);                                            \
+  }                                                                                                \
+  static void ON_STARTUP_CONCAT(_on_shutdown_func_, __LINE__)()

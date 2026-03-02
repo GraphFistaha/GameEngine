@@ -39,4 +39,11 @@ private:
   std::byte m_impl[64];
 };
 using AssetUPtr = std::unique_ptr<Asset>;
+
+
+struct IAssetData
+{
+  virtual ~IAssetData() = default;
+  virtual bool IsReadyToUse() const noexcept = 0;
+};
 } // namespace GameFramework
