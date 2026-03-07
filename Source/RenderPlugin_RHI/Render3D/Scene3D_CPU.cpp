@@ -1,12 +1,7 @@
 #include "Scene3D_CPU.hpp"
 
-#include <Assets/AssetCache.hpp>
 #include <Render3D/Renderer/CubeRenderer.hpp>
 #include <Render3D/Scene3D_GPU.hpp>
-#include <Resources/MaterialCache.hpp>
-#include <Resources/ShadersCache.hpp>
-#include <Utility/Hash.hpp>
-#include <Utility/Uuid.hpp>
 
 namespace RenderPlugin
 {

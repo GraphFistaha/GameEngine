@@ -1,7 +1,7 @@
 #include "Scene2D_CPU.hpp"
 
+#include <Render2D/Renderer/Rect2dRenderer.hpp>
 #include <Render2D/Scene2D_GPU.hpp>
-#include <Utility/Hash.hpp>
 
 namespace RenderPlugin
 {

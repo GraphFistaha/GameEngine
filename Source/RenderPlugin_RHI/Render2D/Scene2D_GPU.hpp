@@ -4,7 +4,6 @@
 #include <Devices/InternalDeviceInterface.hpp>
 #include <GameFramework.hpp>
 #include <Render2D/Renderer/BackgroundRenderer.hpp>
-#include <Render2D/Renderer/Rect2dRenderer.hpp>
 #include <Utility/OwnedBy.hpp>
 
 namespace RenderPlugin

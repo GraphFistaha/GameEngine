@@ -2,7 +2,6 @@
 #include <Common/Pipeline.hpp>
 #include <GameFramework.hpp>
 #include <Render2D/Primitives.hpp>
-#include <Resources/Material.hpp>
 
 namespace RenderPlugin
 {

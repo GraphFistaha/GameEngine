@@ -7,7 +7,6 @@
 #include <Devices/InternalDeviceInterface.hpp>
 #include <GameFramework.hpp>
 #include <Render3D/Primitives.hpp>
-#include <Resources/Material.hpp>
 #include <RHI.hpp>
 #include <Utility/OwnedBy.hpp>
 
