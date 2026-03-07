@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 
+#include <Utility/Utility.hpp>
+
 namespace RenderPlugin
 {
 template<typename PrimT>
@@ -13,7 +15,7 @@ struct IRenderer
   template<typename PrimitiveT>
   bool SetBatch(const RenderBatch<PrimitiveT> & batch)
   {
-    if (auto * renderer = dynamic_cast<BaseRenderer<PrimitiveT> *>(this))
+    if (auto * renderer = GameFramework::Utils::FastDynamicCast<BaseRenderer<PrimitiveT>>(this))
     {
       return renderer->SetBatchImpl(batch);
     }

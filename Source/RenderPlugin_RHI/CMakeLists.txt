@@ -10,6 +10,8 @@ PRIVATE
 	"Common/RenderBatch.hpp"
 	"Common/PipelineSettings.hpp"
 	"Common/Pipeline.hpp"
+	"Common/Renderer.hpp"
+	"Common/SceneBase.hpp"
 
 	"Resources/Material.hpp"
 	"Resources/Material.cpp"
@@ -24,6 +26,7 @@ PRIVATE
 	"Devices/ScreenDevice.cpp"
 	"Devices/ScreenDevice.hpp"
 
+	"Render2D/Primitives.hpp"
 	"Render2D/Scene2D_GPU.cpp" 
 	"Render2D/Scene2D_GPU.hpp" 
 	"Render2D/Scene2D_CPU.cpp"

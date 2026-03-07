@@ -7,7 +7,7 @@
 
 namespace RenderPlugin
 {
-Rect2DRenderer::Rect2DRenderer(Scene2D_GPU & scene)
+Rect2DRenderer::Rect2DRenderer(Scene2D_GPU & scene, const PipelineSettings & settings)
   : OwnedBy<Scene2D_GPU>(scene)
   , m_renderPass(scene.GetDevice().GetFramebuffer().CreateSubpass())
 {
@@ -27,12 +27,7 @@ Rect2DRenderer::Rect2DRenderer(Scene2D_GPU & scene)
       subpassConfig.AttachShader(RHI::ShaderType::Vertex, vertShader->GetSpirV());
   }
   {
-    std::shared_ptr<ShaderFile> fragShader;
-    if (auto * asset = GameFramework::GetAssetsRegistry().GetAsset("Shaders/2D/rect2d.frag"))
-      if (auto * cache = GameFramework::GetAssetCacheRegistry().Get<ShadersCache>())
-        fragShader = cache->Load<ShaderFile>(asset, false /*async*/);
-    if (fragShader)
-      subpassConfig.AttachShader(RHI::ShaderType::Fragment, fragShader->GetSpirV());
+    subpassConfig.AttachShader(RHI::ShaderType::Fragment, settings.GetShader().GetSpirV());
   }
 }
 
@@ -42,15 +37,13 @@ Rect2DRenderer::~Rect2DRenderer()
   //TODO: remove buffer
 }
 
-
-void Rect2DRenderer::TrySetRects(size_t newHash,
-                                 std::span<const GameFramework::Render::Rect2d> rects)
+bool Rect2DRenderer::SetBatchImpl(const Dim2D::RectBatch & batch)
 {
-  if (newHash != m_hash)
+  if (batch.ObjectsHash() != m_hash)
   {
     size_t oldCapacity = m_verticesCpuBuffer.capacity();
     m_verticesCpuBuffer.clear();
-    for (auto && rect : rects)
+    for (auto && rect : batch.GetObjects())
     {
       const float l = rect.X();
       const float t = rect.Y();
@@ -71,13 +64,14 @@ void Rect2DRenderer::TrySetRects(size_t newHash,
       RHI::IBufferGPU * newVerticesBuffer =
         GetScene().GetDevice().GetContext().CreateBuffer(newCapacity * 6 * 2 * sizeof(float),
                                                          RHI::BufferGPUUsage::VertexBuffer, false);
-      //TODO: Delete old verticesBuffer
+      GetScene().GetDevice().GetContext().DeleteBuffer(m_verticesBuffer);
       m_verticesBuffer = newVerticesBuffer;
     }
     m_verticesBuffer->UploadAsync(m_verticesCpuBuffer.data(),
                                   m_verticesCpuBuffer.size() * 6 * 2 * sizeof(float));
-    m_hash = newHash;
+    m_hash = batch.ObjectsHash();
   }
+  return true;
 }
 
 void Rect2DRenderer::Submit()

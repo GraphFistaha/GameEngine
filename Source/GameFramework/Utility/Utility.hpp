@@ -64,33 +64,3 @@ std::shared_ptr<Derived> FastDynamicCast(std::shared_ptr<Base> base) noexcept
 }
 
 } // namespace GameFramework::Utils
-
-#define ON_STARTUP_CONCAT_DETAIL(x, y) x##y
-#define ON_STARTUP_CONCAT(x, y)        ON_STARTUP_CONCAT_DETAIL(x, y)
-#define ON_STARTUP                                                                                 \
-  static void ON_STARTUP_CONCAT(_on_startup_func_, __LINE__)();                                    \
-  namespace                                                                                        \
-  {                                                                                                \
-  struct ON_STARTUP_CONCAT(_on_startup_runner_, __LINE__)                                          \
-  {                                                                                                \
-    ON_STARTUP_CONCAT(_on_startup_runner_, __LINE__)()                                             \
-    {                                                                                              \
-      ON_STARTUP_CONCAT(_on_startup_func_, __LINE__)();                                            \
-    }                                                                                              \
-  } ON_STARTUP_CONCAT(_on_startup_instance_, __LINE__);                                            \
-  }                                                                                                \
-  static void ON_STARTUP_CONCAT(_on_startup_func_, __LINE__)()
-
-#define ON_SHUTDOWN                                                                                \
-  static void ON_STARTUP_CONCAT(_on_shutdown_func_, __LINE__)();                                    \
-  namespace                                                                                        \
-  {                                                                                                \
-  struct ON_STARTUP_CONCAT(_on_shutdown_runner_, __LINE__)                                          \
-  {                                                                                                \
-    ON_STARTUP_CONCAT(~_on_shutdown_runner_, __LINE__)()                                             \
-    {                                                                                              \
-      ON_STARTUP_CONCAT(_on_shutdown_func_, __LINE__)();                                            \
-    }                                                                                              \
-  } ON_STARTUP_CONCAT(_on_shutdown_instance_, __LINE__);                                            \
-  }                                                                                                \
-  static void ON_STARTUP_CONCAT(_on_shutdown_func_, __LINE__)()

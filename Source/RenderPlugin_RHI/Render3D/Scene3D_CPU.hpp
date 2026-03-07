@@ -1,5 +1,5 @@
 #pragma once
-#include <Common/PipelineSettings.hpp>
+#include <Common/Pipeline.hpp>
 #include <GameFramework.hpp>
 #include <Render3D/Primitives.hpp>
 #include <Resources/Material.hpp>
@@ -18,7 +18,7 @@ struct Scene3D_CPU final : public GameFramework::Render::IRenderableScene3D
 
 private:
   Scene3D_GPU * m_boundScene = nullptr;
-  std::unordered_map<PipelineSettings, Dim3D::CubeBatch> m_cubesBatches;
+  PipelinesContainer<Dim3D::Cube> m_cubesBatches;
   GameFramework::Render::Camera m_camera;
 };
 } // namespace RenderPlugin

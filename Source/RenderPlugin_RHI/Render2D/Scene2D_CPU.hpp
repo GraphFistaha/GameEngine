@@ -1,5 +1,8 @@
 #pragma once
+#include <Common/Pipeline.hpp>
 #include <GameFramework.hpp>
+#include <Render2D/Primitives.hpp>
+#include <Resources/Material.hpp>
 
 namespace RenderPlugin
 {
@@ -15,7 +18,7 @@ struct Scene2D_CPU final : public GameFramework::Render::IRenderableScene2D
 
 private:
   Scene2D_GPU * m_boundScene = nullptr;
-  std::vector<GameFramework::Render::Rect2d> m_rectsToDraw;
-  size_t m_rectsHash = 0;
+  GameFramework::Render::Color3f m_background;
+  PipelinesContainer<Dim2D::Rect> m_rects;
 };
 } // namespace RenderPlugin

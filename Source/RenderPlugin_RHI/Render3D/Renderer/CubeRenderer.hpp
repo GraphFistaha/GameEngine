@@ -16,11 +16,11 @@ class CubeRenderer : public BaseRenderer<Dim3D::Cube>,
 {
 public:
   explicit CubeRenderer(Scene3D_GPU & scene, const PipelineSettings & settings);
-  ~CubeRenderer();
+  virtual ~CubeRenderer() override;
   MAKE_ALIAS_FOR_GET_OWNER(Scene3D_GPU, GetScene);
 
 public:
-  void Submit();
+  virtual void Submit() override;
 
 protected:
   virtual bool SetBatchImpl(const Dim3D::CubeBatch & batch) override;

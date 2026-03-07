@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Assets/Asset.hpp>
 #include <Render/RenderPrimitive.hpp>
 
 namespace GameFramework::Render
@@ -17,12 +18,14 @@ public:
   float Y() const noexcept { return m_top; }
   float Width() const noexcept { return m_width; }
   float Height() const noexcept { return m_height; }
+  Asset * GetMaterial() const noexcept { return m_material; }
 
 private:
   float m_left = 0;
   float m_top = 0;
   float m_width = 0;
   float m_height = 0;
+  Asset * m_material = nullptr;
 };
 
 /// concepts
