@@ -29,6 +29,9 @@ struct AssetsRegistry
 
   /// @brief get asset by path
   virtual const Asset * GetAsset(const std::filesystem::path & path) const = 0;
+
+  /// @brief Get a list of assets by its type (for preload)
+  virtual const std::vector<const Asset *> & GetAssetsByType(AssetType type) const & noexcept = 0;
 };
 
 using AssetsRegisryUPtr = std::unique_ptr<AssetsRegistry>;
