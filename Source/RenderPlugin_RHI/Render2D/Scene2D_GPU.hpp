@@ -1,30 +1,29 @@
 #pragma once
 
+#include <Common/SceneBase.hpp>
+#include <Devices/InternalDeviceInterface.hpp>
 #include <GameFramework.hpp>
-#include <InternalDeviceInterface.hpp>
 #include <Render2D/Renderer/BackgroundRenderer.hpp>
-#include <Render2D/Renderer/Rect2dRenderer.hpp>
+#include <Utility/OwnedBy.hpp>
 
 namespace RenderPlugin
 {
 
-struct Scene2D_GPU final : public RHI::OwnedBy<InternalDevice>
+struct Scene2D_GPU final : public SceneBase<Scene2D_GPU>,
+                           public GameFramework::OwnedBy<InternalDevice>
 {
   explicit Scene2D_GPU(InternalDevice & device);
   virtual ~Scene2D_GPU() override;
   MAKE_ALIAS_FOR_GET_OWNER(InternalDevice, GetDevice);
 
-  void SetBackground(const GameFramework::Color3f & color);
-  void TrySetRects(size_t newHash, std::span<const GameFramework::Rect2d> rects);
+  void SetBackground(const GameFramework::Render::Color3f & color);
 
 public:
   void Invalidate();
-  void Draw();
   bool ShouldBeInvalidated() const noexcept;
 
 private:
   BackgroundRenderer m_backgroundRenderer;
-  Rect2DRenderer m_rectsRenderer;
 };
 
 } // namespace RenderPlugin

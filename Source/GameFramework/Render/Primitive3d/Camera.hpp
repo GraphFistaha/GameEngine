@@ -2,7 +2,7 @@
 #include <Game/Math.hpp>
 #include <Render/RenderPrimitive.hpp>
 
-namespace GameFramework
+namespace GameFramework::Render
 {
 
 struct PerspectiveSettings final
@@ -35,8 +35,9 @@ public:
   Mat4f GetVP() const noexcept;
   //Vec3f GetRightVector() const noexcept;
   //Vec3f GetFrontVector() const noexcept;
-public:
-  virtual size_t Hash() const noexcept override;
+
+public: // IHashable
+  size_t Hash() const noexcept;
 
 private:
   bool m_isPerspective = false;
@@ -44,4 +45,7 @@ private:
   Mat4f m_viewMatrix;
 };
 
-} // namespace GameFramework
+// concepts
+static_assert(Hashable<Camera>);
+
+} // namespace GameFramework::Render

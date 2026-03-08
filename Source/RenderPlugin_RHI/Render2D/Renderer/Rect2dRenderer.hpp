@@ -1,22 +1,28 @@
 #pragma once
+#include <Common/RenderBatch.hpp>
+#include <Common/Renderer.hpp>
 #include <GameFramework.hpp>
-#include <OwnedBy.hpp>
+#include <Render2D/Primitives.hpp>
 #include <RHI.hpp>
+#include <Utility/OwnedBy.hpp>
 
 namespace RenderPlugin
 {
 struct Scene2D_GPU;
 
-class Rect2DRenderer : public RHI::OwnedBy<Scene2D_GPU>
+class Rect2DRenderer : public BaseRenderer<Dim2D::Rect>,
+                       public GameFramework::OwnedBy<Scene2D_GPU>
 {
 public:
-  explicit Rect2DRenderer(Scene2D_GPU & scene);
-  ~Rect2DRenderer();
+  explicit Rect2DRenderer(Scene2D_GPU & scene, const PipelineSettings & settings);
+  virtual ~Rect2DRenderer() override;
   MAKE_ALIAS_FOR_GET_OWNER(Scene2D_GPU, GetScene);
 
 public:
-  void TrySetRects(size_t newHash, std::span<const GameFramework::Rect2d> rects);
-  void Submit();
+  virtual void Submit() override;
+
+protected:
+  virtual bool SetBatchImpl(const Dim2D::RectBatch & batch) override;
 
 private:
   size_t m_hash = 0;

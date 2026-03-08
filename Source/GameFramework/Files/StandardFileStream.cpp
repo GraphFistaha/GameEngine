@@ -6,111 +6,186 @@
 
 namespace GameFramework
 {
-class StandardFileReader : public IFileReader
+class StandardFileStream : public IBinaryFileReader,
+                           public IBinaryFileWriter
 {
 public:
-  explicit StandardFileReader(const std::filesystem ::path & path);
-  virtual ~StandardFileReader() = default;
+  explicit StandardFileStream(const std::filesystem ::path & path, bool isRead);
+  virtual ~StandardFileStream() = default;
 
-public: // IFileReader
+public: // IFileStream
   virtual std::filesystem::path FullPath() const override { return m_path; }
-  /// read bytes from stream
-  virtual size_t Read(std::span<std::byte> buffer) override;
   /// get position of caret in file
   virtual size_t Tell() override { return m_stream.tellg(); }
   /// move writing caret in the file
   virtual void Seek(std::ptrdiff_t offset, SeekDirection dir) override;
+
+public: // IBinaryFileReader
+  /// read bytes from stream
+  virtual size_t Read(std::span<std::byte> buffer) override;
   /// get size of file
   virtual size_t Size() const override { return m_fileSize; }
 
-private:
-  std::filesystem::path m_path;
-  std::ifstream m_stream;
-  size_t m_fileSize = 0;
-};
-
-
-StandardFileReader::StandardFileReader(const std::filesystem::path & path)
-  : m_path(path)
-{
-  std::ios_base::openmode mode = std::ios::in | std::ios_base::binary | std::ios::ate;
-  m_stream.open(path, mode);
-  if (m_stream.is_open() && m_stream.good())
-  {
-    m_fileSize = m_stream.tellg();
-    m_stream.seekg(0, std::ios::beg);
-  }
-  else
-  {
-    throw std::runtime_error("Failed to open file");
-  }
-}
-
-size_t StandardFileReader::Read(std::span<std::byte> buffer)
-{
-  m_stream.read(reinterpret_cast<char *>(buffer.data()), buffer.size_bytes());
-  return m_stream.gcount();
-}
-
-void StandardFileReader::Seek(std::ptrdiff_t offset, SeekDirection dir)
-{
-  m_stream.seekg(offset, static_cast<std::ios::seekdir>(dir));
-}
-
-struct StandardFileWriter : public IFileWriter
-{
-  explicit StandardFileWriter(const std::filesystem::path & path);
-  virtual ~StandardFileWriter() = default;
-
-public:
-  virtual std::filesystem::path FullPath() const override { return m_path; }
+public: //IBinaryFileWriter
   /// write bytes into stream
   virtual void Write(std::span<const std::byte> data) override;
-  /// get position of caret in file
-  virtual size_t Tell() override { return m_stream.tellp(); }
-  /// move writing caret in the file
-  virtual void Seek(std::ptrdiff_t offset, SeekDirection dir) override;
   /// finish all writing operations
   virtual void Flush() override { m_stream.flush(); }
 
 private:
   std::filesystem::path m_path;
-  std::ofstream m_stream;
+  std::fstream m_stream;
+  size_t m_fileSize = 0;
 };
 
-StandardFileWriter::StandardFileWriter(const std::filesystem::path & path)
+
+StandardFileStream::StandardFileStream(const std::filesystem::path & path, bool isRead)
   : m_path(path)
-  , m_stream(path, std::ios::out | std::ios::binary)
 {
+  std::ios_base::openmode mode = std::ios::ate | std::ios_base::binary;
+  if (isRead)
+    mode |= std::ios::in;
+  else
+    mode |= std::ios::out;
+  m_stream.open(path, mode);
   if (!m_stream.is_open() || m_stream.bad())
     throw std::runtime_error("Failed to open file");
+  if (isRead)
+  {
+    m_fileSize = m_stream.tellg();
+    m_stream.seekg(0, std::ios::beg);
+  }
 }
 
-void StandardFileWriter::Write(std::span<const std::byte> data)
+size_t StandardFileStream::Read(std::span<std::byte> buffer)
+{
+  m_stream.read(reinterpret_cast<char *>(buffer.data()), buffer.size_bytes());
+  return m_stream.gcount();
+}
+
+void StandardFileStream::Seek(std::ptrdiff_t offset, SeekDirection dir)
+{
+  m_stream.seekg(offset, static_cast<std::ios::seekdir>(dir));
+  m_stream.seekp(offset, static_cast<std::ios::seekdir>(dir));
+}
+
+void StandardFileStream::Write(std::span<const std::byte> data)
 {
   m_stream.write(reinterpret_cast<const char *>(data.data()), data.size_bytes());
 }
 
-void StandardFileWriter::Seek(std::ptrdiff_t offset, SeekDirection dir)
+
+GAME_FRAMEWORK_API BinaryFileWriterUPtr OpenBinaryFileWrite(const std::filesystem::path & path)
 {
+  return std::make_unique<StandardFileStream>(path, false /*isRead*/);
+}
+
+
+GAME_FRAMEWORK_API BinaryFileReaderUPtr OpenBinaryFileRead(const std::filesystem::path & path)
+{
+  return std::make_unique<StandardFileStream>(path, true /*isRead*/);
+}
+
+} // namespace GameFramework
+
+
+namespace GameFramework
+{
+class StandardTextFileStream : public ITextFileReader,
+                               public ITextFileWriter
+{
+public:
+  explicit StandardTextFileStream(const std::filesystem::path & path, bool isRead);
+  virtual ~StandardTextFileStream() = default;
+
+public: // IFileStream
+  virtual std::filesystem::path FullPath() const override { return m_path; }
+  /// get position of caret in file
+  virtual size_t Tell() override { return m_stream.tellg(); }
+  /// move writing caret in the file
+  virtual void Seek(std::ptrdiff_t offset, SeekDirection dir) override;
+
+public: //ITextFileReader
+  /// get size of file
+  virtual size_t Size() const override { return m_fileSize; }
+  /// read bytes from stream
+  virtual wchar_t ReadChar() override;
+  /// watch next character from file, without reading
+  virtual wchar_t PeekChar() override;
+  /// read bytes from stream
+  virtual size_t ReadLine(std::wstring & line, wchar_t delim) override;
+
+public: // ITextFileWriter
+  /// read next character from file
+  virtual void WriteChar(wchar_t ch) override;
+  /// reads line from file
+  virtual void WriteLine(const std::wstring_view & line) override;
+  /// finish all writing operations
+  virtual void Flush() override { m_stream.flush(); }
+
+private:
+  std::filesystem::path m_path;
+  std::wfstream m_stream;
+  size_t m_fileSize = 0;
+};
+
+StandardTextFileStream::StandardTextFileStream(const std::filesystem::path & path, bool isRead)
+  : m_path(path)
+  , m_stream(path, isRead ? std::ios::in | std::ios::ate : std::ios::out | std::ios::ate)
+{
+  if (!m_stream.is_open() || m_stream.bad())
+    throw std::runtime_error("Failed to open file");
+  if (isRead)
+  {
+    m_fileSize = m_stream.tellg();
+    m_stream.seekg(0, std::ios::beg);
+  }
+}
+
+wchar_t StandardTextFileStream::ReadChar()
+{
+  wchar_t ch;
+  m_stream.get(ch);
+  return ch;
+}
+
+void StandardTextFileStream::Seek(std::ptrdiff_t offset, SeekDirection dir)
+{
+  m_stream.seekg(offset, static_cast<std::ios::seekdir>(dir));
   m_stream.seekp(offset, static_cast<std::ios::seekdir>(dir));
 }
 
-
-GAME_FRAMEWORK_API FileWriterUPtr OpenBinaryFileWrite(const std::filesystem::path & path)
+wchar_t StandardTextFileStream::PeekChar()
 {
-  return std::make_unique<StandardFileWriter>(path);
+  return static_cast<wchar_t>(m_stream.peek());
 }
 
-
-GAME_FRAMEWORK_API FileReaderUPtr OpenBinaryFileRead(const std::filesystem::path & path)
+size_t StandardTextFileStream::ReadLine(std::wstring & line, wchar_t delim)
 {
-  return std::make_unique<StandardFileReader>(path);
+  size_t oldLength = line.size();
+  std::getline(m_stream, line, delim);
+  return line.size() - oldLength;
 }
 
+void StandardTextFileStream::WriteChar(wchar_t ch)
+{
+  m_stream.put(ch);
+  m_fileSize++;
+}
 
-//GAME_FRAMEWORK_API FileStreamUPtr OpenTextFileStream(const std::filesystem::path & path)
-//{
-//  return std::make_unique<StandardFileReader>(path, false /*binary*/);
-//}
+void StandardTextFileStream::WriteLine(const std::wstring_view & line)
+{
+  m_stream << line << std::endl;
+  m_fileSize += line.size();
+}
+
+GAME_FRAMEWORK_API TextFileReaderUPtr OpenTextFileRead(const std::filesystem::path & path)
+{
+  return std::make_unique<StandardTextFileStream>(path, true);
+}
+
+GAME_FRAMEWORK_API TextFileWriterUPtr OpenTextFileWrite(const std::filesystem::path & path)
+{
+  return std::make_unique<StandardTextFileStream>(path, false);
+}
 } // namespace GameFramework

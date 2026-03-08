@@ -2,7 +2,7 @@
 #include <list>
 
 #include <GameFramework.hpp>
-#include <InternalDeviceInterface.hpp>
+#include <Devices/InternalDeviceInterface.hpp>
 #include <Render2D/Scene2D_GPU.hpp>
 #include <Render3D/Scene3D_GPU.hpp>
 #include <RHI.hpp>
@@ -17,8 +17,8 @@ struct ScreenDevice : public GameFramework::IScreenDevice,
   virtual ~ScreenDevice() override;
 
 public: // IDevice interface
-  virtual GameFramework::Scene2DUPtr AcquireScene2D() override;
-  virtual GameFramework::Scene3DUPtr AcquireScene3D() override;
+  virtual GameFramework::Render::Scene2DUPtr AcquireScene2D() override;
+  virtual GameFramework::Render::Scene3DUPtr AcquireScene3D() override;
   virtual int GetOwnerId() const noexcept override;
   virtual float GetAspectRatio() const noexcept override;
 

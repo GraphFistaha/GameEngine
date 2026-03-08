@@ -1,13 +1,15 @@
 #include <Constants.hpp>
+#include <Devices/ScreenDevice.hpp>
 #include <GameFramework.hpp>
-#include <ScreenDevice.hpp>
+#include <Resources/MaterialCache.hpp>
+#include <Resources/ShadersCache.hpp>
 
 namespace RenderPlugin
 {
 struct RenderPlugin_RHI : public GameFramework::RenderPlugin
 {
   explicit RenderPlugin_RHI(const GameFramework::IPluginLoader & loader);
-  virtual ~RenderPlugin_RHI() = default;
+  virtual ~RenderPlugin_RHI() override;
 
   virtual GameFramework::ScreenDeviceUPtr CreateScreenDevice(
     GameFramework::IWindow & window) override;
@@ -18,14 +20,42 @@ private:
   std::unique_ptr<RHI::IContext> m_context;
 };
 
+void RenderLog(RHI::LogMessageStatus status, const std::string & message)
+{
+  switch (status)
+  {
+    case RHI::LogMessageStatus::LOG_INFO:
+      std::printf("INFO: - %s\n", message.c_str());
+      break;
+    case RHI::LogMessageStatus::LOG_WARNING:
+      std::printf("WARNING: - %s\n", message.c_str());
+      break;
+    case RHI::LogMessageStatus::LOG_ERROR:
+      std::printf("ERROR: - %s\n", message.c_str());
+      break;
+    case RHI::LogMessageStatus::LOG_DEBUG:
+      std::printf("DEBUG: - %s\n", message.c_str());
+      break;
+  }
+}
+
 RenderPlugin_RHI::RenderPlugin_RHI(const GameFramework::IPluginLoader & loader)
 {
   GameFramework::GetFileManager().Mount(g_shadersDirectory,
                                         GameFramework::CreateDirectoryMountPoint(
                                           loader.Path() / g_shadersDirectory));
+  GameFramework::GetAssetsRegistry().LoadDatabase("./RenderPluginData");
+  GameFramework::GetAssetCacheRegistry().ConstructCache<MaterialCache>();
+  GameFramework::GetAssetCacheRegistry().ConstructCache<ShadersCache>();
   RHI::GpuTraits gpuTraits{};
   gpuTraits.require_presentation = true;
-  m_context = CreateContext(gpuTraits, nullptr);
+  m_context = CreateContext(gpuTraits, RenderLog);
+}
+
+RenderPlugin_RHI::~RenderPlugin_RHI()
+{
+  GameFramework::GetAssetCacheRegistry().DestroyCache<MaterialCache>();
+  GameFramework::GetAssetCacheRegistry().DestroyCache<ShadersCache>();
 }
 
 GameFramework::ScreenDeviceUPtr RenderPlugin_RHI::CreateScreenDevice(

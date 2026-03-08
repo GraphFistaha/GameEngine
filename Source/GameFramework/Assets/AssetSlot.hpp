@@ -14,16 +14,17 @@ struct GAME_FRAMEWORK_API AssetSlot final
 
 public:
   void SetAsset(const Uuid & uuid);
+  void SetAsset(const std::filesystem::path & path);
   void ClearAsset();
-  const IAsset * GetAsset() const;
+  const Asset * GetAsset() const noexcept;
 
 public:
-  static size_t ReadBinary(IFileReader & stream, AssetSlot & slot);
-  static void WriteBinary(IFileWriter & stream, const AssetSlot & slot);
+  static size_t ReadBinary(IBinaryFileReader & stream, AssetSlot & slot);
+  static void WriteBinary(IBinaryFileWriter & stream, const AssetSlot & slot);
 
 private:
   AssetType m_assetType;
-  IAsset * m_asset = nullptr;
+  Asset * m_asset = nullptr;
 };
 
 } // namespace GameFramework

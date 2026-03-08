@@ -24,3 +24,11 @@ PRIVATE
 	GameFramework
 	glfw
 )
+
+install(TARGETS ${this_target}
+  EXPORT ${this_target}
+  RUNTIME DESTINATION Bin
+  LIBRARY DESTINATION Lib
+  ARCHIVE DESTINATION Lib
+  INCLUDES DESTINATION include
+)

@@ -1,9 +1,14 @@
 #pragma once
 
+#include <type_traits>
+#include <unordered_set>
+
+#include <Common/SceneBase.hpp>
+#include <Devices/InternalDeviceInterface.hpp>
 #include <GameFramework.hpp>
-#include <InternalDeviceInterface.hpp>
-#include <Render3D/Renderer/CubeRenderer.hpp>
+#include <Render3D/Primitives.hpp>
 #include <RHI.hpp>
+#include <Utility/OwnedBy.hpp>
 
 namespace RenderPlugin
 {
@@ -14,26 +19,25 @@ struct ViewProjection final
   GameFramework::Mat4f projection;
 };
 
-struct Scene3D_GPU final : public RHI::OwnedBy<InternalDevice>
+struct Scene3D_GPU final : public SceneBase<Scene3D_GPU>,
+                           public GameFramework::OwnedBy<InternalDevice>
 {
   explicit Scene3D_GPU(InternalDevice & device);
   virtual ~Scene3D_GPU() override;
   MAKE_ALIAS_FOR_GET_OWNER(InternalDevice, GetDevice);
 
-  void TrySetCubes(size_t newHash, std::span<const GameFramework::Cube> cubes);
-  void SetCamera(const GameFramework::Camera & camera);
+  void SetCamera(const GameFramework::Render::Camera & camera);
 
 public:
   RHI::IBufferGPU * GetViewProjectionBuffer();
 
 public:
   void Invalidate();
-  void Draw();
   bool ShouldBeInvalidated() const noexcept;
 
 private:
   RHI::IBufferGPU * m_viewProjBuffer = nullptr;
-  CubeRenderer m_cubesRenderer; // one for each material
+  // you should delete renderers which is not used during frame
 };
 
 } // namespace RenderPlugin

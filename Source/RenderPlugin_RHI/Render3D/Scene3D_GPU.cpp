@@ -5,22 +5,16 @@ namespace RenderPlugin
 Scene3D_GPU::Scene3D_GPU(InternalDevice & device)
   : OwnedBy<InternalDevice>(device)
   , m_viewProjBuffer(
-      device.GetContext().AllocBuffer(sizeof(ViewProjection), RHI::UniformBuffer, true))
-  , m_cubesRenderer(*this)
+      device.GetContext().CreateBuffer(sizeof(ViewProjection), RHI::UniformBuffer, true))
 {
 }
 
 Scene3D_GPU::~Scene3D_GPU()
 {
-  //TODO: delete m_viewProjBuffer
+  GetDevice().GetContext().DeleteBuffer(m_viewProjBuffer);
 }
 
-void Scene3D_GPU::TrySetCubes(size_t newHash, std::span<const GameFramework::Cube> cubes)
-{
-  m_cubesRenderer.TrySetCubes(newHash, cubes);
-}
-
-void Scene3D_GPU::SetCamera(const GameFramework::Camera & camera)
+void Scene3D_GPU::SetCamera(const GameFramework::Render::Camera & camera)
 {
   ViewProjection vp{camera.GetViewMatrix(), camera.GetProjectionMatrix()};
   m_viewProjBuffer->UploadSync(&vp, sizeof(vp));
@@ -33,16 +27,13 @@ RHI::IBufferGPU * Scene3D_GPU::GetViewProjectionBuffer()
 
 void Scene3D_GPU::Invalidate()
 {
-  //TODO: m_renderPass->SetDirtyCommands();
-}
-
-void Scene3D_GPU::Draw()
-{
-  m_cubesRenderer.Submit();
+  // for (auto&& [settings, rendererPtr] : m_renderers)
+  //    rendererPtr->Invalidate();
 }
 
 bool Scene3D_GPU::ShouldBeInvalidated() const noexcept
 {
   return false;
 }
+
 } // namespace RenderPlugin

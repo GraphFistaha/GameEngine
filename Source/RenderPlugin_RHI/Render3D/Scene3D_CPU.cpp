@@ -1,5 +1,6 @@
 #include "Scene3D_CPU.hpp"
 
+#include <Render3D/Renderer/CubeRenderer.hpp>
 #include <Render3D/Scene3D_GPU.hpp>
 
 namespace RenderPlugin
@@ -8,23 +9,23 @@ Scene3D_CPU::Scene3D_CPU(Scene3D_GPU & scene)
   : m_boundScene(&scene)
 {
 }
+
 Scene3D_CPU::~Scene3D_CPU()
 {
   if (m_boundScene)
-  { 
+  {
     m_boundScene->SetCamera(m_camera);
-    m_boundScene->TrySetCubes(m_cubesHash, m_cubesToDraw);
-    m_boundScene->Draw();
+    for (auto && pipeline : m_cubesBatches)
+      m_boundScene->AddPipeline<CubeRenderer, Dim3D::Cube>(pipeline);
   }
 }
 
-void Scene3D_CPU::AddCube(const GameFramework::Cube & cube)
+void Scene3D_CPU::AddCube(const GameFramework::Render::Cube & cube)
 {
-  m_cubesToDraw.push_back(cube);
-  GameFramework::Utils::hash_combine(m_cubesHash, cube);
+  PushObjectWithMaterial<Dim3D::Cube>(cube, m_cubesBatches);
 }
 
-void Scene3D_CPU::SetCamera(const GameFramework::Camera & camera)
+void Scene3D_CPU::SetCamera(const GameFramework::Render::Camera & camera)
 {
   m_camera = camera;
 }

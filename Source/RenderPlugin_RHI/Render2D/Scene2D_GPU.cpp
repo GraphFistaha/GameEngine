@@ -2,7 +2,7 @@
 
 #include <Constants.hpp>
 #include <Files/FileManager.hpp>
-#include <ShaderFile.hpp>
+#include <Resources/ShaderFile.hpp>
 
 namespace RenderPlugin
 {
@@ -10,31 +10,20 @@ namespace RenderPlugin
 Scene2D_GPU::Scene2D_GPU(InternalDevice & device)
   : OwnedBy<InternalDevice>(device)
   , m_backgroundRenderer(*this)
-  , m_rectsRenderer(*this)
 {
 }
 
 Scene2D_GPU::~Scene2D_GPU() = default;
 
-void Scene2D_GPU::SetBackground(const GameFramework::Color3f & color)
+void Scene2D_GPU::SetBackground(const GameFramework::Render::Color3f & color)
 {
   m_backgroundRenderer.SetBackground(color);
-}
-
-void Scene2D_GPU::TrySetRects(size_t newHash, std::span<const GameFramework::Rect2d> rects)
-{
-  m_rectsRenderer.TrySetRects(newHash, rects);
+  m_backgroundRenderer.Submit();
 }
 
 void Scene2D_GPU::Invalidate()
 {
   //TODO: m_renderPass->SetDirtyCommands();
-}
-
-void Scene2D_GPU::Draw()
-{
-  m_backgroundRenderer.Submit();
-  m_rectsRenderer.Submit();
 }
 
 bool Scene2D_GPU::ShouldBeInvalidated() const noexcept

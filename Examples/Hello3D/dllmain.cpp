@@ -23,9 +23,11 @@ class Hello3D : public GameFramework::GamePlugin
 {
   float t = 0.0;
   FPSCamera m_camera{Vec3f{0.0, -1.0, 0.0}};
+  GameFramework::Uuid mat1;
+  GameFramework::Uuid mat2;
 
 public:
-  Hello3D();
+  Hello3D(const std::filesystem::path & path);
   virtual ~Hello3D() override = default;
 
   virtual std::string GetGameName() const override { return "Hello3D"; }
@@ -49,10 +51,13 @@ private:
   std::vector<SignalsQueue *> m_boundSignalsQueue;
 };
 
-Hello3D::Hello3D()
+Hello3D::Hello3D(const std::filesystem::path & path)
 {
   m_camera.SetPosition(Vec3f{0, 0, -10});
-  GetAssetsRegistry().LoadDatabase("Data/assets.csv");
+
+  GetAssetsRegistry().LoadDatabase(path / "Hello3D_Data");
+  mat1 = GetAssetsRegistry().GetAsset("Materials/Cube1.mat")->GetUUID();
+  mat2 = GetAssetsRegistry().GetAsset("Materials/Cube2.mat")->GetUUID();
 }
 
 std::vector<InputBinding> Hello3D::GetInputConfiguration() const
@@ -120,12 +125,13 @@ void Hello3D::Render(GameFramework::IDevice & device)
   }
   if (auto scene = device.AcquireScene3D())
   {
-    Camera cam;
+    Render::Camera cam;
     cam.SetPlacement(m_camera.GetPosition(), m_camera.GetFrontVector());
-    cam.SetPerspectiveSettings(PerspectiveSettings{45.0f, device.GetAspectRatio(), {0.1f, 100.0f}});
+    cam.SetPerspectiveSettings(
+      Render::PerspectiveSettings{45.0f, device.GetAspectRatio(), {0.1f, 100.0f}});
     scene->SetCamera(cam);
-    scene->AddCube(Cube());
-    scene->AddCube(Cube(Vec3f{3, -3.0, 0.0f}));
+    scene->AddCube(Render::Cube());
+    scene->AddCube(Render::Cube(Vec3f{3, -3.0, 0.0f}, mat2));
   }
 }
 
@@ -133,5 +139,5 @@ void Hello3D::Render(GameFramework::IDevice & device)
 PLUGIN_API std::unique_ptr<GameFramework::IPluginInstance> CreateInstance(
   const GameFramework::IPluginLoader & loader)
 {
-  return std::make_unique<Hello3D>();
+  return std::make_unique<Hello3D>(loader.Path());
 }

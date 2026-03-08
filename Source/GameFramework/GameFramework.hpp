@@ -9,6 +9,7 @@
 
 #include <Assets/AssetsRegistry.hpp>
 #include <Files/FileManager.hpp>
+#include <Game/Async.hpp>
 #include <Input/InputController.hpp>
 #include <PluginInterfaces/GamePlugin.hpp>
 #include <PluginInterfaces/RenderPlugin.hpp>

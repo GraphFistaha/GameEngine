@@ -3,7 +3,7 @@
 #include "Camera.hpp"
 
 #include <glm/ext.hpp>
-#include <Utility/Utility.hpp>
+#include <Utility/Hash.hpp>
 
 #include "glm/gtx/hash.hpp"
 namespace
@@ -14,7 +14,7 @@ glm::vec3 OrthogonalVector(const glm::vec3 & v1, const glm::vec3 & v2)
 }
 } // namespace
 
-namespace GameFramework
+namespace GameFramework::Render
 {
 void Camera::SetPlacement(const Vec3f & pos, const Vec3f & direction, const Vec3f & Up)
 {
@@ -28,7 +28,7 @@ void Camera::SetPlacement(const Vec3f & pos, const Vec3f & direction, const Vec3
 void Camera::SetPerspectiveSettings(const PerspectiveSettings & settings)
 {
   glm::mat4 proj = glm::perspective(glm::radians(settings.fov), settings.aspectRatio,
-                                      settings.zRange.x, settings.zRange.y);
+                                    settings.zRange.x, settings.zRange.y);
   m_projMatrix = CastFromGLM(proj);
   m_isPerspective = true;
 }
@@ -59,7 +59,7 @@ Mat4f Camera::GetVP() const noexcept
 size_t Camera::Hash() const noexcept
 {
   size_t hash = 0;
-  Utils::hash_combine(hash, CastToGLM(m_viewMatrix), CastToGLM(m_projMatrix));
+  Utils::combined_hash(hash, CastToGLM(m_viewMatrix), CastToGLM(m_projMatrix));
   return hash;
 }
 

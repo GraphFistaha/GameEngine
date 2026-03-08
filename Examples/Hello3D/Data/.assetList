@@ -1,0 +1,5 @@
+uuid;type;path
+e4c881a0-da55-4c8a-a730-d24e223809af;ShaderSource;Shaders/Cube1.frag
+1E5C8BBC-8FB7-485C-979C-9A2223A4690D;ShaderSource;Shaders/Cube2.frag
+F04FEDBD-BCB1-4407-840D-AAF518B8ACE2;Material;Materials/Cube1.mat
+27CC383C-4B65-4C32-83D9-2CA8FA2E2600;Material;Materials/Cube2.mat

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 
 namespace GameFramework::Utils
@@ -25,21 +26,6 @@ constexpr std::array<ValueType, N> make_array(InIt first, InIt last)
   return make_array(first, std::make_index_sequence<N>{});
 }
 
-constexpr inline void hash_combine(std::size_t & seed)
-{
-}
-
-/// @brief combines two hash result
-/// @param seed - old hash-value to combine with
-/// @param v - value to hash
-template<typename T, typename... Rest>
-constexpr inline void hash_combine(std::size_t & seed, const T & v, Rest... rest)
-{
-  std::hash<T> hasher;
-  seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-  hash_combine(seed, rest...);
-}
-
 template<typename T>
 constexpr T bit(T i)
 {
@@ -54,5 +40,27 @@ struct overloaded : Ts...
 };
 template<class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
+
+template<typename Derived, typename Base>
+  requires(std::is_base_of_v<Base, Derived>)
+Derived * FastDynamicCast(Base * base) noexcept
+{
+#ifdef SAFE_INHERITED_CAST
+  return dynamic_cast<Derived *>(base);
+#else
+  return static_cast<Derived *>(base);
+#endif
+}
+
+template<typename Derived, typename Base>
+  requires(std::is_base_of_v<Base, Derived>)
+std::shared_ptr<Derived> FastDynamicCast(std::shared_ptr<Base> base) noexcept
+{
+#ifdef SAFE_INHERITED_CAST
+  return std::dynamic_pointer_cast<Derived>(base);
+#else
+  return std::static_pointer_cast<Derived>(base);
+#endif
+}
 
 } // namespace GameFramework::Utils

@@ -16,28 +16,33 @@ AssetSlot::~AssetSlot()
 
 void AssetSlot::SetAsset(const Uuid & uuid)
 {
-  const IAsset * foundAsset = GetAssetsRegistry().GetAsset(uuid);
+  const Asset * foundAsset = GetAssetsRegistry().GetAsset(uuid);
   if (foundAsset && foundAsset->GetType() == m_assetType)
   {
-    m_asset = const_cast<IAsset *>(foundAsset);
-    if (m_asset)
-      m_asset->AddUser();
+    m_asset = const_cast<Asset *>(foundAsset);
   }
+}
+
+void AssetSlot::SetAsset(const std::filesystem::path& path)
+{
+    const Asset* foundAsset = GetAssetsRegistry().GetAsset(path);
+    if (foundAsset && foundAsset->GetType() == m_assetType)
+    {
+        m_asset = const_cast<Asset*>(foundAsset);
+    }
 }
 
 void AssetSlot::ClearAsset()
 {
-  if (m_asset)
-    m_asset->ReleaseUser();
   m_asset = nullptr;
 }
 
-const IAsset * AssetSlot::GetAsset() const
+const Asset * AssetSlot::GetAsset() const noexcept
 {
   return m_asset;
 }
 
-size_t AssetSlot::ReadBinary(IFileReader & stream, AssetSlot & slot)
+size_t AssetSlot::ReadBinary(IBinaryFileReader & stream, AssetSlot & slot)
 {
   Uuid assetUuid;
   size_t result = stream.ReadValue(assetUuid);
@@ -45,7 +50,7 @@ size_t AssetSlot::ReadBinary(IFileReader & stream, AssetSlot & slot)
   return result;
 }
 
-void AssetSlot::WriteBinary(IFileWriter & stream, const AssetSlot & slot)
+void AssetSlot::WriteBinary(IBinaryFileWriter & stream, const AssetSlot & slot)
 {
   stream.WriteValue(slot.m_asset->GetUUID());
 }

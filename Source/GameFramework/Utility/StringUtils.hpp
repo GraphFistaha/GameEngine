@@ -6,9 +6,10 @@
 namespace GameFramework::Utils
 {
 
-constexpr std::string_view Trim(std::string_view text, std::string_view exclude = " \n\r\t\v\0")
+template<typename CharT>
+constexpr std::basic_string_view<CharT> Trim(std::basic_string_view<CharT> text, std::basic_string_view<CharT> exclude = " \n\r\t\v\0")
 {
-  if (const size_t leftShift = text.find_first_not_of(exclude); leftShift != std::string_view::npos)
+  if (const size_t leftShift = text.find_first_not_of(exclude); leftShift != std::basic_string_view<CharT>::npos)
   {
     text.remove_prefix(leftShift);
   }
@@ -18,7 +19,7 @@ constexpr std::string_view Trim(std::string_view text, std::string_view exclude 
   }
 
   if (const size_t rightShift = text.find_last_not_of(exclude);
-      rightShift != std::string_view::npos)
+      rightShift != std::basic_string_view<CharT>::npos)
   {
     text.remove_suffix(text.size() - rightShift - 1);
   }
@@ -30,19 +31,20 @@ constexpr std::string_view Trim(std::string_view text, std::string_view exclude 
   return text;
 }
 
-constexpr std::vector<std::string_view> Split(std::string_view text, char delimiter)
+template<typename CharT>
+constexpr std::vector<std::basic_string_view<CharT>> Split(std::basic_string_view<CharT> text, CharT delimiter)
 {
-  std::vector<std::string_view> result;
+  std::vector<std::basic_string_view<CharT>> result;
   size_t begin = 0, end = -1;
   do
   {
     begin = end + 1;
     end = text.find(delimiter, begin);
-    if (end != std::string::npos)
+    if (end != std::basic_string_view<CharT>::npos)
       result.push_back(text.substr(begin, end - begin));
     else
       result.push_back(text.substr(begin, text.size() - begin));
-  } while (end != std::string::npos);
+  } while (end != std::basic_string_view<CharT>::npos);
   return result;
 }
 

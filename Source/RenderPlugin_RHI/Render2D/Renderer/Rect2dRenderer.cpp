@@ -3,11 +3,11 @@
 #include <Constants.hpp>
 #include <GameFramework.hpp>
 #include <Render2D/Scene2D_GPU.hpp>
-#include <ShaderFile.hpp>
+#include <Resources/ShadersCache.hpp>
 
 namespace RenderPlugin
 {
-Rect2DRenderer::Rect2DRenderer(Scene2D_GPU & scene)
+Rect2DRenderer::Rect2DRenderer(Scene2D_GPU & scene, const PipelineSettings & settings)
   : OwnedBy<Scene2D_GPU>(scene)
   , m_renderPass(scene.GetDevice().GetFramebuffer().CreateSubpass())
 {
@@ -19,18 +19,15 @@ Rect2DRenderer::Rect2DRenderer(Scene2D_GPU & scene)
   subpassConfig.AddInputBinding(0, 2 * sizeof(float), RHI::InputBindingType::VertexData);
   subpassConfig.AddInputAttribute(0, 0, 0, 2, RHI::InputAttributeElementType::FLOAT);
   {
-    auto && stream =
-      GameFramework::GetFileManager().OpenRead(g_shadersDirectory / "rect2d_vert.spv");
-    ShaderFile file;
-    stream->ReadValue<ShaderFile>(file);
-    subpassConfig.AttachShader(RHI::ShaderType::Vertex, file.GetSpirV());
+    std::shared_ptr<ShaderFile> vertShader;
+    if (auto * asset = GameFramework::GetAssetsRegistry().GetAsset("Shaders/2D/rect2d.vert"))
+      if (auto * cache = GameFramework::GetAssetCacheRegistry().Get<ShadersCache>())
+        vertShader = cache->Load<ShaderFile>(asset, false /*async*/);
+    if (vertShader)
+      subpassConfig.AttachShader(RHI::ShaderType::Vertex, vertShader->GetSpirV());
   }
   {
-    auto && stream =
-      GameFramework::GetFileManager().OpenRead(g_shadersDirectory / "rect2d_frag.spv");
-    ShaderFile file;
-    stream->ReadValue<ShaderFile>(file);
-    subpassConfig.AttachShader(RHI::ShaderType::Fragment, file.GetSpirV());
+    subpassConfig.AttachShader(RHI::ShaderType::Fragment, settings.GetShader().GetSpirV());
   }
 }
 
@@ -40,14 +37,13 @@ Rect2DRenderer::~Rect2DRenderer()
   //TODO: remove buffer
 }
 
-
-void Rect2DRenderer::TrySetRects(size_t newHash, std::span<const GameFramework::Rect2d> rects)
+bool Rect2DRenderer::SetBatchImpl(const Dim2D::RectBatch & batch)
 {
-  if (newHash != m_hash)
+  if (batch.ObjectsHash() != m_hash)
   {
     size_t oldCapacity = m_verticesCpuBuffer.capacity();
     m_verticesCpuBuffer.clear();
-    for (auto && rect : rects)
+    for (auto && rect : batch.GetObjects())
     {
       const float l = rect.X();
       const float t = rect.Y();
@@ -66,15 +62,16 @@ void Rect2DRenderer::TrySetRects(size_t newHash, std::span<const GameFramework::
     if (newCapacity != oldCapacity || !m_verticesBuffer)
     {
       RHI::IBufferGPU * newVerticesBuffer =
-        GetScene().GetDevice().GetContext().AllocBuffer(newCapacity * 6 * 2 * sizeof(float),
-                                                        RHI::BufferGPUUsage::VertexBuffer, false);
-      //TODO: Delete old verticesBuffer
+        GetScene().GetDevice().GetContext().CreateBuffer(newCapacity * 6 * 2 * sizeof(float),
+                                                         RHI::BufferGPUUsage::VertexBuffer, false);
+      GetScene().GetDevice().GetContext().DeleteBuffer(m_verticesBuffer);
       m_verticesBuffer = newVerticesBuffer;
     }
     m_verticesBuffer->UploadAsync(m_verticesCpuBuffer.data(),
                                   m_verticesCpuBuffer.size() * 6 * 2 * sizeof(float));
-    m_hash = newHash;
+    m_hash = batch.ObjectsHash();
   }
+  return true;
 }
 
 void Rect2DRenderer::Submit()

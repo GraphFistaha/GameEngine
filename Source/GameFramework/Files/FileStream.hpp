@@ -16,6 +16,30 @@ enum class SeekDirection
   Current,
   End
 };
+struct IBinaryFileReader;
+struct IBinaryFileWriter;
+struct ITextFileReader;
+struct ITextFileWriter;
+
+template<typename T>
+concept BinaryReadable = requires(IBinaryFileReader & stream, T & obj) {
+  { T::ReadBinary(stream, obj) } -> std::convertible_to<size_t>;
+};
+
+template<typename T>
+concept BinaryWritable = requires(IBinaryFileWriter & stream, const T & obj) {
+  { T::WriteBinary(stream, obj) };
+};
+
+template<typename T>
+concept TextReadable = requires(ITextFileReader & stream, T & obj) {
+  { T::ReadText(stream, obj) } -> std::convertible_to<size_t>;
+};
+
+template<typename T>
+concept TextWriteable = requires(ITextFileWriter & stream, T & obj) {
+  { T::WriteText(stream, obj) };
+};
 
 struct IFileStream
 {
@@ -27,36 +51,13 @@ struct IFileStream
   virtual void Seek(std::ptrdiff_t offset, SeekDirection dir) = 0;
 };
 
-struct IFileReader : public IFileStream
+struct IBinaryFileReader : public IFileStream
 {
-  virtual ~IFileReader() = default;
+  virtual ~IBinaryFileReader() = default;
   /// read bytes from stream
   virtual size_t Read(std::span<std::byte> buffer) = 0;
   /// get size of file
   virtual size_t Size() const = 0;
-
-  template<typename CharT>
-  size_t ReadLine(std::basic_string<CharT> & result)
-  {
-    CharT ch = '\0';
-    size_t readSymbols = 0;
-    size_t readBytes = 0;
-    do
-    {
-      readBytes = ReadValue(ch);
-      if (readBytes > 0)
-      {
-        result.push_back(ch);
-        readSymbols++;
-      }
-    } while (readBytes > 0 && ch != '\n' && ch != '\0');
-
-    //remove \r\n from end of line
-    while (!result.empty() && (result.back() == '\n' || result.back() == '\r'))
-      result.pop_back();
-
-    return readSymbols;
-  }
 
   template<typename T>
   size_t ReadValue(T & val);
@@ -77,17 +78,34 @@ struct IFileReader : public IFileStream
     return Read(std::as_writable_bytes(std::span{val}));
   }
 
-  template<typename T>
-    requires requires(IFileReader & s, T & v) { T::ReadBinary(s, v); }
+  template<BinaryReadable T>
   size_t ReadValue(T & value)
   {
     return T::ReadBinary(*this, value);
   }
 };
 
-struct IFileWriter : public IFileStream
+struct ITextFileReader : public IFileStream
 {
-  virtual ~IFileWriter() = default;
+  /// get size of file
+  virtual size_t Size() const = 0;
+  /// read next character from file
+  virtual wchar_t ReadChar() = 0;
+  /// watch next character from file, without reading
+  virtual wchar_t PeekChar() = 0;
+  /// reads line from file
+  virtual size_t ReadLine(std::wstring & line, wchar_t delim = L'\n') = 0;
+
+  template<TextReadable T>
+  size_t ReadValue(T & obj)
+  {
+    return T::ReadText(*this, obj);
+  }
+};
+
+struct IBinaryFileWriter : public IFileStream
+{
+  virtual ~IBinaryFileWriter() = default;
   /// write bytes into stream
   virtual void Write(std::span<const std::byte> data) = 0;
   /// finish all writing operations
@@ -103,8 +121,7 @@ struct IFileWriter : public IFileStream
     Write(std::as_bytes(std::span{&value, 1}));
   }
 
-  template<typename T>
-    requires requires(IFileWriter & s, const T & v) { T::WriteBinary(s, v); }
+  template<BinaryWritable T>
   void WriteValue(const T & object)
   {
     T::WriteBinary(*this, object);
@@ -119,17 +136,35 @@ struct IFileWriter : public IFileStream
   }
 };
 
-using FileReaderUPtr = std::unique_ptr<IFileReader>;
-using FileWriterUPtr = std::unique_ptr<IFileWriter>;
+struct ITextFileWriter : public IFileStream
+{
+  /// read next character from file
+  virtual void WriteChar(wchar_t ch) = 0;
+  /// reads line from file
+  virtual void WriteLine(const std::wstring_view & line) = 0;
+  /// finish all writing operations
+  virtual void Flush() = 0;
+
+  template<TextWriteable T>
+  void WriteValue(const T & obj)
+  {
+    return T::WriteText(*this, obj);
+  }
+};
+
+using BinaryFileReaderUPtr = std::unique_ptr<IBinaryFileReader>;
+using BinaryFileWriterUPtr = std::unique_ptr<IBinaryFileWriter>;
+using TextFileReaderUPtr = std::unique_ptr<ITextFileReader>;
+using TextFileWriterUPtr = std::unique_ptr<ITextFileWriter>;
 
 } // namespace GameFramework
 
 namespace GameFramework
 {
 
-GAME_FRAMEWORK_API FileWriterUPtr OpenBinaryFileWrite(const std::filesystem::path & path);
-GAME_FRAMEWORK_API FileReaderUPtr OpenBinaryFileRead(const std::filesystem::path & path);
-// blocks OpenTextFileStream because std::fstream::write can't write a text data for integer
-//GAME_FRAMEWORK_API FileStreamUPtr OpenTextFileStream(const std::filesystem::path & path);
+GAME_FRAMEWORK_API BinaryFileWriterUPtr OpenBinaryFileWrite(const std::filesystem::path & path);
+GAME_FRAMEWORK_API BinaryFileReaderUPtr OpenBinaryFileRead(const std::filesystem::path & path);
+GAME_FRAMEWORK_API TextFileReaderUPtr OpenTextFileRead(const std::filesystem::path & path);
+GAME_FRAMEWORK_API TextFileWriterUPtr OpenTextFileWrite(const std::filesystem::path & path);
 
 } // namespace GameFramework

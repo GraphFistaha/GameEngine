@@ -50,6 +50,8 @@ AssetType GetAssetTypeByPath(const std::filesystem::path & path) noexcept
     // ---------- Shader includes ----------
     {"inc", AssetType::ShaderInclude},
     {"hlsli", AssetType::ShaderInclude},
+    // ---------- Materials ------------
+    {"mat", AssetType::Material},
   };
 
   auto it = s_map.find(path.extension().string());
@@ -59,7 +61,33 @@ AssetType GetAssetTypeByPath(const std::filesystem::path & path) noexcept
     return it->second;
 }
 
-std::string_view AssetTypeToString(AssetType type) noexcept
+GAME_FRAMEWORK_API  std::wstring_view AssetTypeToWString(AssetType type) noexcept
+{
+  switch (type)
+  {
+    case AssetType::Text:
+      return L"Text";
+    case AssetType::Config:
+      return L"Config";
+    case AssetType::Picture:
+      return L"Picture";
+    case AssetType::Audio:
+      return L"Audio";
+    case AssetType::ShaderSource:
+      return L"ShaderSource";
+    case AssetType::ShaderBinary:
+      return L"ShaderBinary";
+    case AssetType::ShaderInclude:
+      return L"ShaderInclude";
+    case AssetType::Material:
+      return L"Material";
+    case AssetType::Unknown:
+    default:
+      return L"Unknown";
+  }
+}
+
+GAME_FRAMEWORK_API  std::string_view AssetTypeToString(AssetType type) noexcept
 {
   switch (type)
   {
@@ -77,23 +105,26 @@ std::string_view AssetTypeToString(AssetType type) noexcept
       return "ShaderBinary";
     case AssetType::ShaderInclude:
       return "ShaderInclude";
+    case AssetType::Material:
+      return "Material";
     case AssetType::Unknown:
     default:
       return "Unknown";
   }
 }
 
-AssetType StringToAssetType(std::string_view str) noexcept
+AssetType StringToAssetType(std::wstring_view str) noexcept
 {
-  using Map = std::unordered_map<std::string_view, AssetType>;
+  using Map = std::unordered_map<std::wstring_view, AssetType>;
   static Map m_map{
-    {"Text", AssetType::Text},
-    {"Config", AssetType::Config},
-    {"Picture", AssetType::Picture},
-    {"Audio", AssetType::Audio},
-    {"ShaderSource", AssetType::ShaderSource},
-    {"ShaderBinary", AssetType::ShaderBinary},
-    {"ShaderInclude", AssetType::ShaderInclude},
+    {L"Text", AssetType::Text},
+    {L"Config", AssetType::Config},
+    {L"Picture", AssetType::Picture},
+    {L"Audio", AssetType::Audio},
+    {L"ShaderSource", AssetType::ShaderSource},
+    {L"ShaderBinary", AssetType::ShaderBinary},
+    {L"ShaderInclude", AssetType::ShaderInclude},
+    {L"Material", AssetType::Material},
   };
 
   auto it = m_map.find(str);
