@@ -16,6 +16,8 @@ struct RenderPlugin_RHI : public GameFramework::RenderPlugin
 
   virtual void Tick() override;
 
+  virtual void PreloadResources() override;
+
 private:
   std::unique_ptr<RHI::IContext> m_context;
 };
@@ -68,6 +70,17 @@ void RenderPlugin_RHI::Tick()
 {
   m_context->ClearResources();
   m_context->TransferPass();
+}
+
+void RenderPlugin_RHI::PreloadResources()
+{
+  auto * cache = GameFramework::GetAssetCacheRegistry().Get<ShadersCache>();
+  auto && shaders =
+    GameFramework::GetAssetsRegistry().GetAssetsByType(GameFramework::AssetType::ShaderSource);
+  for (auto && shaderAsset : shaders)
+  {
+    cache->Load<ShaderFile>(shaderAsset, false /*async*/);
+  }
 }
 
 } // namespace RenderPlugin

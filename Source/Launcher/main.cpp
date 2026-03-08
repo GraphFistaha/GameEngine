@@ -78,6 +78,8 @@ int main(int argc, const char * argv[])
 
   // in the beginning we must read and update input configuration
   signalsQueue.PushSignal(GameFramework::GameSignal::UpdateInputConfiguration);
+  // preload render resources
+  renderManager->PreloadResources();
 
   while (std::all_of(windows.begin(), windows.end(),
                      [](const GameFramework::WindowUPtr & wnd) { return !wnd->ShouldClose(); }))

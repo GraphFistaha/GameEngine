@@ -35,6 +35,8 @@ using ScreenDeviceUPtr = std::unique_ptr<IScreenDevice>;
 struct RenderPlugin : public IPluginInstance
 {
   virtual ~RenderPlugin() = default;
+  /// @brief call it after all other plugins has been loaded
+  virtual void PreloadResources() = 0;
   virtual ScreenDeviceUPtr CreateScreenDevice(IWindow & window) = 0;
   virtual void Tick() = 0;
 };

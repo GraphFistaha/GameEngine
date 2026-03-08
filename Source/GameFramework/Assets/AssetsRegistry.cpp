@@ -33,12 +33,17 @@ struct AssetsRegistryImpl : public AssetsRegistry
   /// @brief get asset by path
   virtual const Asset * GetAsset(const std::filesystem::path & path) const override;
 
+  /// @brief Get a list of assets by its type (for preload)
+  virtual const std::vector<const Asset *> & GetAssetsByType(
+    AssetType type) const & noexcept override;
+
 private:
   using AssetsContainer = std::vector<Asset>;
   using AssetPtrStack = std::deque<Asset *>;
   std::unordered_map<std::filesystem::path, AssetsContainer> m_assetsModules;
   std::unordered_map<Uuid, Asset *> m_assetsByUuids;
   std::unordered_map<std::filesystem::path, AssetPtrStack> m_assetsByPath;
+  std::unordered_map<AssetType, std::vector<const Asset *>> m_assetsByType;
 };
 
 void AssetsRegistryImpl::DeleteDatabase(const std::filesystem::path & directory)
@@ -120,8 +125,14 @@ void AssetsRegistryImpl::LoadDatabase(const std::filesystem::path & path)
     for (auto && asset : it->second)
     {
       m_assetsByUuids.insert({asset.GetUUID(), &asset});
-      auto [it2, _] = m_assetsByPath.insert({asset.GetPath(), {}});
-      it2->second.push_back(&asset);
+      {
+        auto [it2, _] = m_assetsByPath.insert({asset.GetPath(), {}});
+        it2->second.push_back(&asset);
+      }
+      {
+        auto [it2, _] = m_assetsByType.insert({asset.GetType(), {}});
+        it2->second.push_back(&asset);
+      }
     }
   }
 }
@@ -142,6 +153,14 @@ const Asset * AssetsRegistryImpl::GetAsset(const std::filesystem::path & path) c
     return nullptr;
   assert(!it->second.empty());
   return it->second.empty() ? nullptr : it->second.back();
+}
+
+const std::vector<const Asset *> & AssetsRegistryImpl::GetAssetsByType(
+  AssetType type) const & noexcept
+{
+  static const std::vector<const Asset *> s_emptyVec;
+  auto it = m_assetsByType.find(type);
+  return it == m_assetsByType.end() ? s_emptyVec : it->second;
 }
 
 } // namespace GameFramework
