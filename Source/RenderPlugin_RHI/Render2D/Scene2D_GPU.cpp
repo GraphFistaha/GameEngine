@@ -9,6 +9,7 @@ namespace RenderPlugin
 
 Scene2D_GPU::Scene2D_GPU(InternalDevice & device)
   : OwnedBy<InternalDevice>(device)
+  , m_backgroundRenderer(*this)
 {
 }
 
@@ -16,7 +17,8 @@ Scene2D_GPU::~Scene2D_GPU() = default;
 
 void Scene2D_GPU::SetBackground(const GameFramework::Render::Color3f & color)
 {
-  //m_backgroundRenderer.SetBackground(color);
+  m_backgroundRenderer.SetBackground(color);
+  m_backgroundRenderer.Submit();
 }
 
 void Scene2D_GPU::Invalidate()

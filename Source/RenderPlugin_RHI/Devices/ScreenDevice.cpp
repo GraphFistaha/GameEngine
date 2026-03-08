@@ -57,8 +57,8 @@ bool ScreenDevice::BeginFrame()
 {
   if (!m_framebuffer)
     return false;
+  m_scene2D.UpdateRenderers();
   m_scene3D.UpdateRenderers();
-  //m_scene2D.UpdateRenderers();
   m_renderTarget = m_framebuffer->BeginFrame();
   m_renderTarget->SetClearValue(0, 0.0, 0.0, 0.0, 1.0);
   m_renderTarget->SetClearValue(1, 1.0f, 0);

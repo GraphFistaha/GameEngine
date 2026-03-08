@@ -21,6 +21,9 @@ struct Scene2D_GPU final : public SceneBase<Scene2D_GPU>,
 public:
   void Invalidate();
   bool ShouldBeInvalidated() const noexcept;
+
+private:
+  BackgroundRenderer m_backgroundRenderer;
 };
 
 } // namespace RenderPlugin
