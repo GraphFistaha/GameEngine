@@ -38,10 +38,11 @@ struct AssetCacheRegistry
 {
   virtual ~AssetCacheRegistry() = default;
 
-  template<typename CacheT>
-  void ConstructCache()
+  template<typename CacheT, typename... Args>
+  void ConstructCache(Args &&... args)
   {
-    AddCacheByTypeId(typeid(CacheT::CachedAsset), std::make_unique<CacheT>());
+    AddCacheByTypeId(typeid(CacheT::CachedAsset),
+                     std::make_unique<CacheT>(std::forward<Args>(args)...));
   }
 
   template<typename CacheT>

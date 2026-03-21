@@ -12,7 +12,6 @@ class ShaderFile final : public GameFramework::IAssetData
 {
 public:
   ShaderFile() = default;
-  ~ShaderFile() = default;
   std::filesystem::path GetPath() const noexcept { return m_path; }
   const std::vector<uint32_t> & GetSpirV() const & noexcept { return m_data; }
 

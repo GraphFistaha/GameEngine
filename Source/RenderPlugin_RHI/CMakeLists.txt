@@ -21,6 +21,10 @@ PRIVATE
 	"Resources/ShaderFile.cpp"
 	"Resources/ShadersCache.cpp"
 	"Resources/ShadersCache.hpp"
+	"Resources/Texture2D.cpp"
+	"Resources/Texture2D.hpp"
+	"Resources/TextureCache.cpp"
+	"Resources/TextureCache.hpp"
 
 	"Devices/InternalDeviceInterface.hpp"
 	"Devices/ScreenDevice.cpp"
@@ -50,10 +54,13 @@ PUBLIC
 	"${SOURCE_DIR}/RenderPlugin_RHI"
 )
 
+find_package(stb REQUIRED)
+
 target_link_libraries(${this_target}
 PRIVATE
 	GameFramework
 	RHI
+	stb::stb
 )
 
 target_compile_definitions(${this_target}
@@ -61,18 +68,6 @@ PRIVATE
 	SHADERS_DIRECTORY=".shaders"
 )
 
-#TARGET_PRECOMPILE_SPIRV(
-#TARGET ${this_target} 
-#SHADERS_DIRECTORY ".shaders"
-#SHADERS
-#	"Render2D/Shaders/background.vert"
-#	"Render2D/Shaders/background.frag"
-#	"Render2D/Shaders/rect2d.frag"
-#	"Render2D/Shaders/rect2d.vert"
-
-#	"Render3D/Shaders/Cube.frag"
-#	"Render3D/Shaders/Cube.vert"
-#)
 
 TARGET_ASSETS_DIRECTORY(
 	TARGET ${this_target}

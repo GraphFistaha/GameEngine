@@ -3,6 +3,7 @@
 #include <GameFramework.hpp>
 #include <Resources/MaterialCache.hpp>
 #include <Resources/ShadersCache.hpp>
+#include <Resources/TextureCache.hpp>
 
 namespace RenderPlugin
 {
@@ -47,17 +48,20 @@ RenderPlugin_RHI::RenderPlugin_RHI(const GameFramework::IPluginLoader & loader)
                                         GameFramework::CreateDirectoryMountPoint(
                                           loader.Path() / g_shadersDirectory));
   GameFramework::GetAssetsRegistry().LoadDatabase("./RenderPluginData");
-  GameFramework::GetAssetCacheRegistry().ConstructCache<MaterialCache>();
-  GameFramework::GetAssetCacheRegistry().ConstructCache<ShadersCache>();
   RHI::GpuTraits gpuTraits{};
   gpuTraits.require_presentation = true;
   m_context = CreateContext(gpuTraits, RenderLog);
+  // some cache require context is alive
+  GameFramework::GetAssetCacheRegistry().ConstructCache<MaterialCache>();
+  GameFramework::GetAssetCacheRegistry().ConstructCache<ShadersCache>();
+  GameFramework::GetAssetCacheRegistry().ConstructCache<TextureCache>(*m_context);
 }
 
 RenderPlugin_RHI::~RenderPlugin_RHI()
 {
   GameFramework::GetAssetCacheRegistry().DestroyCache<MaterialCache>();
   GameFramework::GetAssetCacheRegistry().DestroyCache<ShadersCache>();
+  GameFramework::GetAssetCacheRegistry().DestroyCache<TextureCache>();
 }
 
 GameFramework::ScreenDeviceUPtr RenderPlugin_RHI::CreateScreenDevice(

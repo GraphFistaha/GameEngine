@@ -58,6 +58,8 @@ struct IBinaryFileReader : public IFileStream
   virtual size_t Read(std::span<std::byte> buffer) = 0;
   /// get size of file
   virtual size_t Size() const = 0;
+  /// checks if end of file is occured
+  virtual bool Eof() const noexcept = 0;
 
   template<typename T>
   size_t ReadValue(T & val);

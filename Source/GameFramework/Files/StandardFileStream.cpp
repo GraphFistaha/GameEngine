@@ -26,6 +26,8 @@ public: // IBinaryFileReader
   /// get size of file
   virtual size_t Size() const override { return m_fileSize; }
 
+  virtual bool Eof() const noexcept override;
+
 public: //IBinaryFileWriter
   /// write bytes into stream
   virtual void Write(std::span<const std::byte> data) override;
@@ -61,6 +63,11 @@ size_t StandardFileStream::Read(std::span<std::byte> buffer)
 {
   m_stream.read(reinterpret_cast<char *>(buffer.data()), buffer.size_bytes());
   return m_stream.gcount();
+}
+
+bool StandardFileStream::Eof() const noexcept
+{
+  return m_stream.eof();
 }
 
 void StandardFileStream::Seek(std::ptrdiff_t offset, SeekDirection dir)
