@@ -57,19 +57,22 @@ RHI::TextureExtent TextureFormat::GetExtent() const noexcept
 
 namespace RenderPlugin
 {
-void Texture2D::BindToGpuContainer(RHI::ITexture * texture, uint32_t layer) noexcept
+void Texture2D::BindToGpuContainer(RHI::DynamicContainers::TexturePalette * palette,
+                                   RHI::TexelIndex textureIndex) noexcept
 {
-  m_texture = texture;
-  m_layer = layer;
+  m_palette = palette;
+  m_textureIndex = textureIndex;
 }
 
 bool Texture2D::IsReadyToUse() const noexcept
 {
-  return false;
+  return m_uploadTask.valid() &&
+         m_uploadTask.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
 }
 
 size_t Texture2D::ReadBinary(GameFramework::IBinaryFileReader & stream, Texture2D & texture)
 {
+  size_t result = 0;
   stbi_io_callbacks callbacks{};
   callbacks.read = [](void * user, char * data, int size) -> int
   {
@@ -88,34 +91,38 @@ size_t Texture2D::ReadBinary(GameFramework::IBinaryFileReader & stream, Texture2
     return stream->Eof();
   };
 
-  int width, height, channels;
-  if (!texture.m_texture)
+  int width, height, channels = 3;
+  if (!texture.m_palette)
   {
-    stbi_info_from_callbacks(&callbacks, &stream, &width, &height, &channels);
+    if (stbi_info_from_callbacks(&callbacks, &stream, &width, &height, &channels))
+    {
+      texture.m_format.width = static_cast<uint16_t>(width);
+      texture.m_format.height = static_cast<uint16_t>(height);
+      texture.m_format.channels = static_cast<uint16_t>(channels);
+      result = 1;
+    }
     stream.Seek(0, GameFramework::SeekDirection::Begin);
-    texture.m_format.width = static_cast<uint16_t>(width);
-    texture.m_format.height = static_cast<uint16_t>(height);
-    texture.m_format.channels = static_cast<uint16_t>(channels);
   }
   else
   {
     stbi_uc * imgData = stbi_load_from_callbacks(&callbacks, &stream, &width, &height, &channels,
                                                  texture.GetFormat().channels);
-    RHI::TextureExtent extent{static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
-    RHI::UploadImageArgs args{};
-    args.srcTexture.pixelData = imgData;
-    args.srcTexture.extent = extent;
-    args.srcTexture.layersCount = 1;
-    args.srcTexture.format = texture.GetFormat().GetHostImageFormat();
-    args.layersCount = 1;
-    args.layerIndex = texture.m_layer;
-    args.copyRegion = {{0, 0, 0}, extent};
-    args.dstOffset = {0, 0, 0};
-    texture.m_texture->UploadImage(args);
-    stbi_image_free(imgData);
+    if (imgData)
+    {
+      RHI::TextureExtent extent{static_cast<RHI::texel_t>(width), static_cast<RHI::texel_t>(height),
+                                1};
+      RHI::HostTextureView args{};
+      args.pixelData = imgData;
+      args.extent = extent;
+      args.format = texture.GetFormat().GetHostImageFormat();
+      args.type = RHI::ImageType::Image2D;
+      texture.m_uploadTask = texture.m_palette->Upload(texture.m_textureIndex, args);
+      stbi_image_free(imgData);
+      result = 1;
+    }
   }
 
-  return 1;
+  return result;
 }
 
 } // namespace RenderPlugin

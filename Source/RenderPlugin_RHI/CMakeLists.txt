@@ -47,6 +47,9 @@ PRIVATE
 	"Render3D/Scene3D_GPU.hpp"
 	"Render3D/Renderer/CubeRenderer.cpp"
 	"Render3D/Renderer/CubeRenderer.hpp"
+
+	"RHIUtils/DynamicContainers.hpp"
+	"RHIUtils/DynamicContainers.cpp"
 )
 
 target_include_directories(${this_target} 

@@ -18,7 +18,7 @@ public:
 
 public: // Hashable
   size_t Hash() const noexcept { return m_shader.Hash(); }
-  bool operator==(const PipelineSettings& rhs) const noexcept { return m_shader == rhs.m_shader; }
+  bool operator==(const PipelineSettings & rhs) const noexcept { return m_shader == rhs.m_shader; }
 
 private:
   ShaderFile m_shader; ///< fragment shader

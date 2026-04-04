@@ -3,5 +3,5 @@
 
 namespace RenderPlugin
 {
-static const std::filesystem::path g_shadersDirectory(SHADERS_DIRECTORY);
+
 }

@@ -2,14 +2,15 @@
 #include <Assets/Asset.hpp>
 #include <Files/FileStream.hpp>
 #include <RHI.hpp>
+#include <RHIUtils/DynamicContainers.hpp>
 
 namespace RenderPlugin
 {
 struct alignas(4) TextureFormat final
 {
-  uint16_t width = 0;
+  uint16_t width : 14 = 0;
   uint16_t height : 14 = 0;
-  uint16_t channels : 2 = 0;
+  uint16_t channels : 4 = 0; // 0 - red, 2 - rgb, 3 - rgba
 
 public:
   bool operator==(TextureFormat rhs) const noexcept;
@@ -26,10 +27,10 @@ public:
   virtual ~Texture2D() override {};
 
 public:
-  void BindToGpuContainer(RHI::ITexture * texture, uint32_t layer) noexcept;
+  void BindToGpuContainer(RHI::DynamicContainers::TexturePalette * palette,
+                          RHI::TexelIndex textureIndex) noexcept;
   TextureFormat GetFormat() const noexcept { return m_format; }
-  uint32_t GetWidth() const noexcept { return m_format.width; }
-  uint32_t GetHeight() const noexcept { return m_format.height; }
+  RHI::TexelIndex GetIndex() const noexcept { return m_textureIndex; }
 
 public:
   virtual bool IsReadyToUse() const noexcept override;
@@ -39,8 +40,9 @@ public:
 
 private:
   TextureFormat m_format;
-  uint32_t m_layer = 0;
-  RHI::ITexture * m_texture = nullptr;
+  RHI::TexelIndex m_textureIndex;
+  RHI::DynamicContainers::TexturePalette * m_palette = nullptr;
+  std::future<RHI::UploadResult> m_uploadTask;
 };
 
 } // namespace RenderPlugin

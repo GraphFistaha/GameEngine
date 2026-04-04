@@ -7,6 +7,7 @@
 #include <GameFramework.hpp>
 #include <Render3D/Scene3D_GPU.hpp>
 #include <Resources/ShadersCache.hpp>
+#include <Resources/TextureCache.hpp>
 
 namespace RenderPlugin
 {
@@ -41,6 +42,11 @@ CubeRenderer::CubeRenderer(Scene3D_GPU & scene, const PipelineSettings & setting
   subpassConfig.AttachShader(RHI::ShaderType::Fragment, settings.GetShader().GetSpirV());
   m_vpDescriptor = subpassConfig.DeclareUniform({0, 0}, RHI::ShaderType::Vertex);
   m_vpDescriptor->AssignBuffer(*scene.GetViewProjectionBuffer());
+  if (auto * cache = GameFramework::GetAssetCacheRegistry().Get<TextureCache>())
+  {
+    m_samplers = cache->BindToPipeline(&subpassConfig, {0, 1}, RHI::ShaderType::Fragment);
+    m_samplersHash = cache->PaletteHash();
+  }
 }
 
 CubeRenderer::~CubeRenderer()
@@ -77,8 +83,16 @@ bool CubeRenderer::SetBatchImpl(const Dim3D::CubeBatch & batch)
 
 void CubeRenderer::Submit()
 {
+  auto * cache = GameFramework::GetAssetCacheRegistry().Get<TextureCache>();
   if (m_renderPass && m_renderPass->ShouldBeInvalidated() && !m_matricesCpuBuffer.empty())
   {
+    // update descriptors
+    if (cache && m_samplersHash != cache->PaletteHash())
+    {
+      cache->UpdatePipeline(m_samplers);
+      m_samplersHash = cache->PaletteHash();
+    }
+
     auto extent = GetScene().GetDevice().GetFramebuffer().GetExtent();
     if (m_renderPass->BeginPass())
     {

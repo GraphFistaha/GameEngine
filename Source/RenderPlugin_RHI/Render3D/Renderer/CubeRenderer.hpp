@@ -29,6 +29,8 @@ private:
   size_t m_hash = 0;
   std::vector<GameFramework::Mat4f> m_matricesCpuBuffer;
   RHI::IBufferUniformDescriptor * m_vpDescriptor;
+  std::vector<RHI::ISamplerUniformDescriptor *> m_samplers;
+  size_t m_samplersHash = 0;
   RHI::ISubpass * m_renderPass = nullptr;
   RHI::IBufferGPU * m_matricesBuffer = nullptr;
 };

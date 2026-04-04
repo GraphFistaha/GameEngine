@@ -1,6 +1,7 @@
 uuid;type;path
 E24EEEAB-83FF-4EBD-99D7-06702834247E;ShaderSource;Shaders/NullShader.frag
 CC5E2C9D-666D-41F1-8E6B-3F6BCC96D8F6;Material;Materials/NullMaterial.mat
+305FD729-62D3-462A-9E19-6D668CBF36BD;Picture;Textures/NullTexture.png
 F74BD073-6995-400C-A4CA-1085F469A61B;ShaderSource;Shaders/2D/background.frag
 3C38FD1F-B10A-423E-889E-CAE58FC99586;ShaderSource;Shaders/2D/background.vert
 6FF9519D-F99D-4BA1-80A4-B11E8CB11798;ShaderSource;Shaders/2D/rect2d.frag

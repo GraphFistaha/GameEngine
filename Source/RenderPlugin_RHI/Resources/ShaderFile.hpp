@@ -6,7 +6,7 @@
 
 namespace RenderPlugin
 {
-
+static const std::filesystem::path g_shadersDirectory(SHADERS_DIRECTORY);
 /// precompiled shader spir-v file
 class ShaderFile final : public GameFramework::IAssetData
 {
@@ -28,7 +28,7 @@ public: //Hashable
   bool operator==(const ShaderFile & rhs) const noexcept;
 
 private:
-  std::filesystem::path m_path;
+  std::filesystem::path m_path = g_shadersDirectory / "NullShader_frag.spv";
   std::vector<uint32_t> m_data;
 };
 

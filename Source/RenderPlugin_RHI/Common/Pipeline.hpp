@@ -6,7 +6,6 @@
 #include <Common/PipelineSettings.hpp>
 #include <Common/RenderBatch.hpp>
 #include <Resources/MaterialCache.hpp>
-#include <Resources/ShadersCache.hpp>
 
 namespace RenderPlugin
 {
@@ -22,20 +21,15 @@ template<typename PrimT>
 inline void PushObjectWithMaterial(const PrimT & obj,
                                    RenderPlugin::PipelinesContainer<PrimT> & container)
 {
-  auto * cache = GameFramework::GetAssetCacheRegistry().Get<MaterialCache>();
-  auto * shadersCache = GameFramework::GetAssetCacheRegistry().Get<ShadersCache>();
-  auto && materialPtr = cache->Load<Material>(obj.GetMaterial());
-  if (materialPtr)
+  auto * materialCache = GameFramework::GetAssetCacheRegistry().Get<MaterialCache>();
+  assert(materialCache);
+  auto && materialPtr = materialCache->Load<Material>(obj.GetMaterial());
+  if (materialPtr && materialPtr->IsReadyToUse())
   {
-    auto * asset = GameFramework::GetAssetsRegistry().GetAsset(materialPtr->GetFragmentShader());
-    auto && shaderPtr = shadersCache->Load<ShaderFile>(asset, false);
-    if (shaderPtr)
-    {
-      RenderPlugin::PipelineSettings settings(*shaderPtr);
-      // sorts all cubes on groups with same pipeline settings
-      auto [it, inserted] = container.insert({settings, RenderPlugin::RenderBatch<PrimT>{}});
-      it->second.Push(obj);
-    }
+    RenderPlugin::PipelineSettings settings(*materialPtr->GetFragmentShader());
+    // sorts all cubes on groups with same pipeline settings
+    auto [it, inserted] = container.insert({settings, RenderPlugin::RenderBatch<PrimT>{}});
+    it->second.Push(obj);
   }
 }
 

@@ -52,9 +52,9 @@ RenderPlugin_RHI::RenderPlugin_RHI(const GameFramework::IPluginLoader & loader)
   gpuTraits.require_presentation = true;
   m_context = CreateContext(gpuTraits, RenderLog);
   // some cache require context is alive
-  GameFramework::GetAssetCacheRegistry().ConstructCache<MaterialCache>();
   GameFramework::GetAssetCacheRegistry().ConstructCache<ShadersCache>();
   GameFramework::GetAssetCacheRegistry().ConstructCache<TextureCache>(*m_context);
+  GameFramework::GetAssetCacheRegistry().ConstructCache<MaterialCache>();
 }
 
 RenderPlugin_RHI::~RenderPlugin_RHI()

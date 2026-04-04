@@ -38,11 +38,13 @@ private:
   std::filesystem::path m_path;
   std::fstream m_stream;
   size_t m_fileSize = 0;
+  bool m_isRead = false;
 };
 
 
 StandardFileStream::StandardFileStream(const std::filesystem::path & path, bool isRead)
   : m_path(path)
+  , m_isRead(isRead)
 {
   std::ios_base::openmode mode = std::ios::ate | std::ios_base::binary;
   if (isRead)
@@ -61,19 +63,23 @@ StandardFileStream::StandardFileStream(const std::filesystem::path & path, bool 
 
 size_t StandardFileStream::Read(std::span<std::byte> buffer)
 {
+  assert(m_stream.good());
   m_stream.read(reinterpret_cast<char *>(buffer.data()), buffer.size_bytes());
   return m_stream.gcount();
 }
 
 bool StandardFileStream::Eof() const noexcept
 {
-  return m_stream.eof();
+  return m_stream.eof() || m_stream.bad();
 }
 
 void StandardFileStream::Seek(std::ptrdiff_t offset, SeekDirection dir)
 {
-  m_stream.seekg(offset, static_cast<std::ios::seekdir>(dir));
-  m_stream.seekp(offset, static_cast<std::ios::seekdir>(dir));
+  assert(m_stream.good());
+  if (m_isRead)
+    m_stream.seekg(offset, static_cast<std::ios::seekdir>(dir));
+  else
+    m_stream.seekp(offset, static_cast<std::ios::seekdir>(dir));
 }
 
 void StandardFileStream::Write(std::span<const std::byte> data)
